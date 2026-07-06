@@ -27,8 +27,13 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 | Skill | What it does |
 | --- | --- |
 | [cmux-agent-orchestrator](./skills/agents/README.md#cmux-agent-orchestrator) | Run a hierarchy of Claude Code orchestrators across cmux workspaces — a lead that drives per-project sub-orchestrators, relays decisions, runs digest/watch loops, and enforces evidence-based QC. |
-| [antigravity-cli](./skills/agents/README.md#antigravity-cli) | Drive Google's Antigravity CLI (`agy`) from the shell to delegate coding, review, or bulk work to a *different* (non-Claude) model harness. |
 | [cmux-pr-qc-agent](./skills/agents/README.md#cmux-pr-qc-agent) | Spin up an autonomous Claude Code instance in a separate cmux pane that watches a GitHub PR end-to-end — drives CI to green, fixes review comments test-first, and replies per thread until it's mergeable. |
+
+### [`harness/`](./skills/harness/README.md) — driving a different AI coding harness
+
+| Skill | What it does |
+| --- | --- |
+| [antigravity-cli](./skills/harness/README.md#antigravity-cli) | Drive Google's Antigravity CLI (`agy`) from the shell to delegate coding, review, or bulk work to a *different* (non-Claude) model harness. |
 
 ### [`engineering/`](./skills/engineering/README.md) — code & backend work
 

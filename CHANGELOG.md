@@ -10,6 +10,12 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-06
+
+### Changed
+
+- New **`harness/`** category — for skills that drive a different AI coding harness entirely, not Claude Code. Moved `antigravity-cli` there from `agents/` (it never fit "running & delegating to other agents" alongside the cmux-based skills, which stay within the Claude Code process).
+
 ## [0.4.0] - 2026-07-06
 
 ### Added
@@ -62,7 +68,8 @@ Initial collection of reusable Claude Code agent skills.
 
 - Redundant per-category README files — the root `README.md` is the single source of truth for the skill index.
 
-[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/kellykampen/agent-skills/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/kellykampen/agent-skills/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kellykampen/agent-skills/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kellykampen/agent-skills/compare/v0.1.0...v0.2.0
