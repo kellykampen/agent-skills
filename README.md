@@ -46,6 +46,10 @@ Pick the skills you want and the agents to install them on. Or just browse the f
 
 Claude Code discovers skills by scanning `~/.claude/skills/**/SKILL.md`. Each `SKILL.md` has YAML frontmatter (`name`, `description`, `metadata.version`) and a body of instructions. A strong `description` is what lets the model reach for the right skill at the right time.
 
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for notable changes. Individual skills also carry their own `metadata.version` (semver `x.y.z`).
+
 ## License
 
 [MIT](./LICENSE). Use them, fork them, make them yours.
