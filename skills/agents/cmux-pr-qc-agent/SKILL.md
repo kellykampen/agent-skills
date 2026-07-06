@@ -11,8 +11,11 @@ description: >-
   "handle the review comments", "make the checks pass and reply to CodeRabbit",
   "babysit my PR", or wants a separate Claude / QC bot to own a PR. Reach for it
   even if the user just says "I opened a PR, take it from here" — that's this skill.
+compatibility: Requires cmux, the GitHub CLI (`gh`), and git.
 metadata:
-  version: "1.0.1"
+  author: kellykampen
+  version: "1.0.2"
+  requires: "cmux, gh, git"
 ---
 
 # PR QC Bot

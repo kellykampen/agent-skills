@@ -2,9 +2,10 @@
 name: update-docs
 description: Analyze changes since the last git commit and update README.md, docs in /docs/, and CLAUDE.md/AGENTS.md to reflect new features, config, commands, and architectural changes. Use when the user asks to "update the docs", "sync the README", "document what changed", or runs /update-docs. No arguments — it detects changes automatically.
 disable-model-invocation: true
+compatibility: Requires git.
 metadata:
-  author: anonymous
-  version: "1.0.0"
+  author: kellykampen
+  version: "1.0.1"
   requires: "git"
 ---
 

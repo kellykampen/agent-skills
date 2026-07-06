@@ -99,19 +99,23 @@ def validate_skill(skill_path):
     if name and dir_name != name:
         return False, f"Name '{name}' must match the skill directory name '{dir_name}' (agentskills.io spec)"
 
-    # Toolkit policy: every skill carries metadata.author and metadata.version ("N.M").
-    # Hard fail — an unversioned skill can't ship (see SKILL.md "Versioning (mandatory)").
+    # Toolkit policy: every skill carries metadata.author and metadata.version (semver "x.y.z").
+    # Hard fail — an unversioned/mis-versioned skill can't ship (see SKILL.md "Versioning").
     metadata = frontmatter.get('metadata')
     if not isinstance(metadata, dict):
-        return False, "Missing 'metadata' block in frontmatter. Required: metadata.author and metadata.version (e.g. version: \"1.0\")"
+        return False, "Missing 'metadata' block in frontmatter. Required: metadata.author and metadata.version (e.g. version: \"1.0.0\")"
     version = metadata.get('version')
     if version is None:
-        return False, "Missing 'metadata.version'. Every skill must be versioned (MAJOR.MINOR, e.g. \"1.0\") and bumped on update."
-    if not isinstance(version, str) or not re.fullmatch(r'\d+\.\d+(\.\d+)?', version):
-        return False, f"metadata.version must be a quoted version string like \"1.0\" or \"1.2.0\" (got {version!r} — unquoted YAML turns 1.0 into a float)"
+        return False, "Missing 'metadata.version'. Every skill must be versioned semver x.y.z (e.g. \"1.0.0\") and bumped on update."
+    if not isinstance(version, str) or not re.fullmatch(r'\d+\.\d+\.\d+', version):
+        return False, f"metadata.version must be a quoted semver string x.y.z (MAJOR.MINOR.PATCH), e.g. \"1.0.0\" (got {version!r} — \"1.0\" is invalid; unquoted YAML also turns 1.0 into a float)"
     author = metadata.get('author')
     if not author or not isinstance(author, str):
         return False, "Missing 'metadata.author'. Every skill must declare its author (e.g. your-name)."
+    # requires (optional): when present, must be a comma-separated string of tool names.
+    requires = metadata.get('requires')
+    if requires is not None and not isinstance(requires, str):
+        return False, f"metadata.requires must be a comma-separated string of tool names (e.g. \"cmux, gh, git\"), got {requires!r}. Omit it entirely if the skill has no external deps."
 
     # Toolkit policy: skills must be portable and impersonal. No user-specific
     # absolute paths (use ~ instead), and the author's personal name stays in

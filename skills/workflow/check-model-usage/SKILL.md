@@ -4,6 +4,11 @@ description: Checks quota/usage and session + weekly pacing across all 5 AI codi
 context: fork
 model: sonnet
 effort: medium
+compatibility: Requires the CodexBar CLI (`brew install steipete/tap/codexbar`; the script auto-installs it if missing).
+metadata:
+  author: kellykampen
+  version: "1.0.0"
+  requires: "codexbar"
 ---
 
 # Check Model Usage

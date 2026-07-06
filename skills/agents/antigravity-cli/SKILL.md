@@ -11,8 +11,11 @@ description: >-
   model for this", or any headless invocation of a terminal coding agent that isn't Claude.
   Do NOT trigger for the Gemini API/SDK, the old `gemini` CLI, Google Sign-in/OAuth, the Codex
   CLI, a Claude subagent/cmux pane, or the `antigravity` Python xkcd joke module.
+compatibility: Requires the Antigravity CLI (`agy`) on PATH.
 metadata:
-  version: "1.0"
+  author: kellykampen
+  version: "1.0.1"
+  requires: "agy"
 ---
 
 # Antigravity CLI (`agy`)

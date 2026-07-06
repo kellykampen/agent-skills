@@ -3,9 +3,11 @@ name: add-to-changelog
 description: Add a new entry to the project's CHANGELOG.md following the Keep a Changelog format and Semantic Versioning. Use when the user asks to "add a changelog entry", "update the changelog", "log this change", or runs /add-to-changelog with a version, change type, and message. Creates CHANGELOG.md if missing, adds the entry under the right version + change-type section, and keeps formatting consistent.
 argument-hint: <version> <change_type> <message>
 disable-model-invocation: true
+compatibility: Requires git.
 metadata:
-  author: anonymous
-  version: "1.0.0"
+  author: kellykampen
+  version: "1.0.1"
+  requires: "git"
 ---
 
 # Add to Changelog

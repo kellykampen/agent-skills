@@ -4,8 +4,8 @@ description: Interview the user in depth (via the AskUserQuestion tool) to turn 
 argument-hint: [plan-file | feature description]
 disable-model-invocation: true
 metadata:
-  author: anonymous
-  version: "1.0.0"
+  author: kellykampen
+  version: "1.0.1"
 ---
 
 # Interview

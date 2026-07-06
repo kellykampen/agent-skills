@@ -8,7 +8,7 @@ Usage:
                          [--with-assets]
 
 Creates <parent-dir>/<skill-name>/SKILL.md with frontmatter that passes
-quick_validate.py (name rules, description, metadata.author + metadata.version "1.0"),
+quick_validate.py (name rules, description, metadata.author + metadata.version "1.0.0" (semver x.y.z)),
 plus optional resource directories, then validates the result.
 """
 
@@ -23,7 +23,7 @@ name: {name}
 description: {description}
 metadata:
   author: {author}
-  version: "1.0"
+  version: "1.0.0"
 ---
 
 # {title}

@@ -12,9 +12,11 @@ description: >-
   fleet, hand a task to a specific project's sub-orchestrator, spin up a new cmux agent or fleet
   seat, reset a sub-orchestrator that's low on context, set up orchestration for a new project,
   or "orchestrate the orchestrators" — even if they never say the words "cmux agent orchestrator."
+compatibility: Requires cmux (the multi-pane control plane driven over its CLI/socket).
 metadata:
-  author: anonymous
-  version: "2.0"
+  author: kellykampen
+  version: "2.0.1"
+  requires: "cmux"
 ---
 
 # Cmux Agent Orchestrator (lead orchestrator)

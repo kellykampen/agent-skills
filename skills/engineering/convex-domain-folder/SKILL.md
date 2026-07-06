@@ -13,8 +13,11 @@ description: >-
   re-rooting that co-located tests need. Reach for it even when the request sounds
   like a trivial file move — the api-path and test-resolution consequences are
   easy to get wrong.
+compatibility: Requires a Convex project with the `convex` CLI available (for codegen).
 metadata:
-  version: "1.1"
+  author: kellykampen
+  version: "1.1.1"
+  requires: "convex"
 ---
 
 # Convex domain-folder structure

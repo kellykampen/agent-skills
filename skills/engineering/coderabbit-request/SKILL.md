@@ -1,10 +1,10 @@
 ---
 name: coderabbit-request
 description: Use after completing file changes - strongest for source code (AST-aware linting, security, tests), lighter support for markdown/config. Dispatches CodeRabbit reviewer subagent via the gob background runner. ALWAYS request review before considering work complete.
-compatibility: Requires the coderabbit CLI and the gob CLI (background job runner) on PATH, run inside a git repository
+compatibility: Requires the coderabbit CLI and the gob CLI (background job runner) on PATH, run inside a git repository.
 metadata:
-  author: anonymous
-  version: "1.1.0"
+  author: kellykampen
+  version: "1.1.1"
   requires: "gob, coderabbit, git"
 ---
 

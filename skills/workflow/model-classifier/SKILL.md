@@ -12,7 +12,8 @@ description: >-
   or habit — its ratings and thresholds are meant to be a single, consistent source of truth
   and get corrected as real results come in.
 metadata:
-  version: "1.0.1"
+  author: kellykampen
+  version: "1.0.2"
 ---
 
 # Model Classifier

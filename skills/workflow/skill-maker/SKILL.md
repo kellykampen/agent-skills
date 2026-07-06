@@ -2,9 +2,11 @@
 name: skill-maker
 description: Toolkit for authoring and iterating on Claude Code skills end to end. Create a new skill, edit or improve an existing skill, run skill evals, benchmark skill performance with baseline comparison and variance analysis, and optimize a skill's description for reliable triggering. Use whenever the user wants to create a skill, edit or improve a skill, test or benchmark a skill, set up skill evals, or optimize a skill description. Includes an eval viewer that shows old-vs-new outputs side by side with arrow-key voting and per-eval benchmarks inline, and enforces versioning (metadata.version) on every skill it creates or touches.
 license: Apache-2.0 (see bundled LICENSE.txt)
+compatibility: Requires python3 (standard library only) for its helper scripts.
 metadata:
-  author: anonymous
-  version: "2.3"
+  author: kellykampen
+  version: "2.3.1"
+  requires: "python3"
 ---
 
 # Skill Maker
@@ -72,9 +74,12 @@ Based on the user interview, fill in these components:
 
 - **name**: Skill identifier
 - **description**: When to trigger, what it does. This is the primary triggering mechanism - include both what the skill does AND specific contexts for when to use it. All "when to use" info goes here, not in the body. Note: currently Claude has a tendency to "undertrigger" skills -- to not use them when they'd be useful. To combat this, please make the skill descriptions a little bit "pushy". So for instance, instead of "How to build a simple fast dashboard to display internal Anthropic data.", you might write "How to build a simple fast dashboard to display internal Anthropic data. Make sure to use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a 'dashboard.'"
-- **compatibility**: Required tools, dependencies (optional, rarely needed)
-- **metadata**: This toolkit requires `metadata.author` and `metadata.version: "1.0"` on every
-  new skill. See "Versioning (mandatory)" below.
+- **compatibility**: A one-line human-readable sentence naming the external tools/CLIs the skill
+  needs (e.g. `Requires cmux, the GitHub CLI (gh), and git`). Include it whenever the skill has
+  external dependencies; omit it when there are none. See "Requirements metadata" below.
+- **metadata**: This toolkit requires `metadata.author` and `metadata.version` (semver `x.y.z`) on
+  every skill you author, plus `metadata.requires` when the skill has external deps. See
+  "Versioning (mandatory)" and "Requirements metadata" below.
 - **the rest of the skill :)**
 
 To scaffold a new skill directory with all of this pre-filled, run:
@@ -96,21 +101,45 @@ those untouched. A skill you author looks like:
 ```yaml
 metadata:
   author: your-name
-  version: "1.0"
+  version: "1.0.0"
 ```
 
-Rules (per https://agentskills.io/specification, MAJOR.MINOR scheme):
-- **New skill** → `version: "1.0"`.
-- **Any update** to a skill's behavior, instructions, scripts, or assets → bump the version in
-  the same edit. Improvements, fixes, added sections → minor bump (`1.0` → `1.1`). Reworks that
-  change how the skill behaves or is invoked (new workflow, renamed skill, redesigned output) →
-  major bump (`1.1` → `2.0`).
-- Typo-only or comment-only edits don't need a bump, but when in doubt, bump minor — a spurious
-  minor bump costs nothing; a silent behavior change with an unchanged version misleads.
-- `quick_validate.py` hard-fails on any skill missing `metadata.version` (format `N.M`) or
-  `metadata.author`, so an unversioned skill can't pass packaging.
-- When you bump MAJOR, mention what changed in the skill body or its memory entry so the number
-  means something later.
+Versions are **always semver `x.y.z`** (MAJOR.MINOR.PATCH) — quoted, three parts, no exceptions.
+`"1.0"` is invalid; use `"1.0.0"`.
+
+Rules:
+- **New skill** → `version: "1.0.0"`.
+- **Any update** to a skill's behavior, instructions, scripts, assets, or metadata → bump in the
+  same edit:
+  - **PATCH** (`1.0.0` → `1.0.1`) — fixes, small wording, metadata tweaks (e.g. adding `requires`).
+  - **MINOR** (`1.0.1` → `1.1.0`) — new sections/capabilities, backward-compatible improvements.
+  - **MAJOR** (`1.1.0` → `2.0.0`) — reworks that change how the skill behaves or is invoked
+    (new workflow, renamed skill, redesigned output).
+- Typo/comment-only edits don't strictly need a bump, but when in doubt bump PATCH — a spurious
+  bump costs nothing; a silent behavior change with an unchanged version misleads.
+- `quick_validate.py` hard-fails on any skill missing `metadata.version` (must match `x.y.z`) or
+  `metadata.author`, so a mis-versioned skill can't pass packaging.
+- When you bump MAJOR, note what changed in the skill body or its memory entry so the number means
+  something later.
+
+### Requirements metadata
+
+If a skill depends on external tools/CLIs to work, declare them so users know what to install:
+
+```yaml
+compatibility: Requires cmux, the GitHub CLI (gh), and git.
+metadata:
+  author: your-name
+  version: "1.0.0"
+  requires: "cmux, gh, git"
+```
+
+- **`metadata.requires`** — a comma-separated string of the external commands/tools the skill
+  needs on `PATH` (e.g. `"cmux, gh, git"`, `"agy"`, `"codexbar"`). Lowercase command names.
+- **`compatibility`** — the same requirement stated as one human-readable sentence.
+- **Omit both** when the skill has no external dependencies (pure reasoning / built-in tools only).
+- Only annotate skills **you author**. Never add `author`/`requires` to third-party or installed
+  skills you didn't write — leave those untouched.
 
 ### Skill Writing Guide
 
