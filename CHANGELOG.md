@@ -10,6 +10,18 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-06
+
+### Added
+
+- Per-skill `README.md` for all 11 skills — a human-facing landing page (tagline, one-off install command via `npx skills add kellykampen/agent-skills --skill <name>`, "try without installing" via `npx skills use`, what/why/how, requirements) alongside each `SKILL.md`.
+- `skill-maker` now documents this per-skill README convention for any skill published in a shared collection.
+
+### Changed
+
+- Repo made **public**.
+- Root `README.md` table links now point to each skill's `README.md` instead of straight to `SKILL.md`, and calls out the one-off `--skill` install flag.
+
 ## [0.1.0] - 2026-07-06
 
 Initial collection of reusable Claude Code agent skills.
@@ -33,5 +45,6 @@ Initial collection of reusable Claude Code agent skills.
 
 - Redundant per-category README files — the root `README.md` is the single source of truth for the skill index.
 
-[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/kellykampen/agent-skills/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kellykampen/agent-skills/releases/tag/v0.1.0

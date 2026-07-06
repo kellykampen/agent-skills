@@ -5,7 +5,7 @@ license: Apache-2.0 (see bundled LICENSE.txt)
 compatibility: Requires python3 (standard library only) for its helper scripts.
 metadata:
   author: kellykampen
-  version: "2.3.1"
+  version: "2.4.0"
   requires: "python3"
 ---
 
@@ -140,6 +140,52 @@ metadata:
 - **Omit both** when the skill has no external dependencies (pure reasoning / built-in tools only).
 - Only annotate skills **you author**. Never add `author`/`requires` to third-party or installed
   skills you didn't write — leave those untouched.
+
+### Per-skill README (for skills published in a shared collection)
+
+When a skill lives in a public/shared skills repo (installable via `npx skills add owner/repo`),
+give it its own `README.md` alongside `SKILL.md` — the human-facing landing page, since `SKILL.md`
+is written for the model, not a visitor browsing the repo. Don't put this in a separate `docs/`
+directory; keep it in the skill's own folder.
+
+Structure:
+
+```markdown
+# <skill-name>
+
+<one-line tagline>
+
+## Install
+
+\`\`\`bash
+npx skills add <owner>/<repo> --skill <skill-name>
+\`\`\`
+
+Or try it without installing:
+
+\`\`\`bash
+npx skills use <owner>/<repo> --skill <skill-name> --agent claude-code
+\`\`\`
+
+## What it does
+## Why it exists
+## How it works
+## Requirements  <!-- only if metadata.requires is set -->
+
+---
+
+Source: [`SKILL.md`](./SKILL.md) · [Back to all skills](../../../README.md)
+```
+
+- The **one-off install command** (`--skill <name>`) is the whole point — someone should be able
+  to grab a single skill without installing the entire collection. Confirm the real, current flag
+  name against the installed `skills` CLI (`npm view skills readme`) before publishing; it has
+  changed before.
+- **What/why/how** should read as genuine prose, not the `description` field reformatted — the
+  frontmatter description is written to make the model trigger the skill; the README explains it
+  to a person deciding whether they want it.
+- The top-level collection README stays the single index (name + one-line description, linking to
+  each skill's `README.md`) — don't duplicate the full what/why/how there too.
 
 ### Skill Writing Guide
 
