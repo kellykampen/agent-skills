@@ -48,7 +48,9 @@ Source: [`antigravity-cli/SKILL.md`](./antigravity-cli/SKILL.md)
 
 Run a hierarchy of Claude Code orchestrators across cmux workspaces.
 
-<video src="../../media/cmux-agent-orchestrator-explainer.mp4" width="100%" controls></video>
+![cmux-agent-orchestrator demo](../../media/cmux-agent-orchestrator-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/cmux-agent-orchestrator-explainer.mp4))*
 
 **Install:**
 
