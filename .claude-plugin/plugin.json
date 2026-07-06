@@ -12,6 +12,7 @@
     "./skills/workflow/check-model-usage",
     "./skills/engineering/add-to-changelog",
     "./skills/engineering/update-docs",
-    "./skills/workflow/interview"
+    "./skills/workflow/interview",
+    "./skills/workflow/issue-breakdown"
   ]
 }

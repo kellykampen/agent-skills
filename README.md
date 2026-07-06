@@ -22,31 +22,32 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 
 ## Skills
 
-### `agents/` — running & delegating to other agents
+### [`agents/`](./skills/agents/README.md) — running & delegating to other agents
 
 | Skill | What it does |
 | --- | --- |
-| [cmux-agent-orchestrator](./skills/agents/cmux-agent-orchestrator/README.md) | Run a hierarchy of Claude Code orchestrators across cmux workspaces — a lead that drives per-project sub-orchestrators, relays decisions, runs digest/watch loops, and enforces evidence-based QC. |
-| [antigravity-cli](./skills/agents/antigravity-cli/README.md) | Drive Google's Antigravity CLI (`agy`) from the shell to delegate coding, review, or bulk work to a *different* (non-Claude) model harness. |
-| [cmux-pr-qc-agent](./skills/agents/cmux-pr-qc-agent/README.md) | Spin up an autonomous Claude Code instance in a separate cmux pane that watches a GitHub PR end-to-end — drives CI to green, fixes review comments test-first, and replies per thread until it's mergeable. |
+| [cmux-agent-orchestrator](./skills/agents/README.md#cmux-agent-orchestrator) | Run a hierarchy of Claude Code orchestrators across cmux workspaces — a lead that drives per-project sub-orchestrators, relays decisions, runs digest/watch loops, and enforces evidence-based QC. |
+| [antigravity-cli](./skills/agents/README.md#antigravity-cli) | Drive Google's Antigravity CLI (`agy`) from the shell to delegate coding, review, or bulk work to a *different* (non-Claude) model harness. |
+| [cmux-pr-qc-agent](./skills/agents/README.md#cmux-pr-qc-agent) | Spin up an autonomous Claude Code instance in a separate cmux pane that watches a GitHub PR end-to-end — drives CI to green, fixes review comments test-first, and replies per thread until it's mergeable. |
 
-### `engineering/` — code & backend work
-
-| Skill | What it does |
-| --- | --- |
-| [coderabbit-request](./skills/engineering/coderabbit-request/README.md) | Request a [CodeRabbit](https://coderabbit.ai) review of your uncommitted changes and return a structured, severity-categorized issue list. |
-| [convex-domain-folder](./skills/engineering/convex-domain-folder/README.md) | Reorganize a [Convex](https://convex.dev) backend into per-domain folders (schema/queries/mutations/model per domain), handling the api-path and test-resolution changes that trip people up. |
-| [add-to-changelog](./skills/engineering/add-to-changelog/README.md) | Add an entry to `CHANGELOG.md` (Keep a Changelog + SemVer). _User-invoked._ |
-| [update-docs](./skills/engineering/update-docs/README.md) | Update README/docs/CLAUDE.md to match changes since the last git commit. _User-invoked._ |
-
-### `workflow/` — the AI workflow itself
+### [`engineering/`](./skills/engineering/README.md) — code & backend work
 
 | Skill | What it does |
 | --- | --- |
-| [model-classifier](./skills/workflow/model-classifier/README.md) | Classify a task into the single best model to run it on — scored on cost, intelligence, and taste — across a roster of current frontier and budget models. |
-| [skill-maker](./skills/workflow/skill-maker/README.md) | A toolkit for authoring and iterating on Claude Code skills: create, edit, improve, run evals, benchmark, and optimize a skill's description for reliable triggering. |
-| [check-model-usage](./skills/workflow/check-model-usage/README.md) | Check quota/usage and session + weekly pacing across your AI coding harnesses (Claude Code, Codex, Antigravity, GLM, Kimi) in one command, via the [CodexBar](https://github.com/steipete/CodexBar) CLI. |
-| [interview](./skills/workflow/interview/README.md) | Interview you in depth (via AskUserQuestion) to turn an idea into a spec — written in place, in `plans/`, or as Linear issues. _User-invoked._ |
+| [coderabbit-request](./skills/engineering/README.md#coderabbit-request) | Request a [CodeRabbit](https://coderabbit.ai) review of your uncommitted changes and return a structured, severity-categorized issue list. |
+| [convex-domain-folder](./skills/engineering/README.md#convex-domain-folder) | Reorganize a [Convex](https://convex.dev) backend into per-domain folders (schema/queries/mutations/model per domain), handling the api-path and test-resolution changes that trip people up. |
+| [add-to-changelog](./skills/engineering/README.md#add-to-changelog) | Add an entry to `CHANGELOG.md` (Keep a Changelog + SemVer). _User-invoked._ |
+| [update-docs](./skills/engineering/README.md#update-docs) | Update README/docs/CLAUDE.md to match changes since the last git commit. _User-invoked._ |
+
+### [`workflow/`](./skills/workflow/README.md) — the AI workflow itself
+
+| Skill | What it does |
+| --- | --- |
+| [model-classifier](./skills/workflow/README.md#model-classifier) | Classify a task into the single best model to run it on — scored on cost, intelligence, and taste — across a roster of current frontier and budget models. |
+| [skill-maker](./skills/workflow/README.md#skill-maker) | A toolkit for authoring and iterating on Claude Code skills: create, edit, improve, run evals, benchmark, and optimize a skill's description for reliable triggering. |
+| [check-model-usage](./skills/workflow/README.md#check-model-usage) | Check quota/usage and session + weekly pacing across your AI coding harnesses (Claude Code, Codex, Antigravity, GLM, Kimi) in one command, via the [CodexBar](https://github.com/steipete/CodexBar) CLI. |
+| [interview](./skills/workflow/README.md#interview) | Interview you in depth (via AskUserQuestion) to turn an idea into a spec — written in place, in `plans/`, or as Linear issues. _User-invoked._ |
+| [issue-breakdown](./skills/workflow/README.md#issue-breakdown) | Break a feature into a Linear epic + small, review-ready issues with acceptance criteria, Fibonacci ≤3 estimates, and dependency links. |
 
 ## How skills work
 

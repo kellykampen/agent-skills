@@ -10,6 +10,17 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-06
+
+### Added
+
+- **`issue-breakdown`** skill (`workflow/`) — break a feature into a Linear epic + small, review-ready issues (user stories, acceptance criteria, Fibonacci ≤3, dependency links). 12 skills total.
+
+### Changed
+
+- **README structure reverted to per-category** (`skills/<category>/README.md`), not per-skill. Each category README now holds one `##` section per skill — tagline, one-off install command, try-without-installing, what/why/how, requirements — instead of a separate `README.md` in every skill folder. The top-level README links to `skills/<category>/README.md#<skill-name>` for each skill.
+- `skill-maker` documents the corrected per-category convention and bumps to 2.4.1.
+
 ## [0.2.0] - 2026-07-06
 
 ### Added
@@ -45,6 +56,7 @@ Initial collection of reusable Claude Code agent skills.
 
 - Redundant per-category README files — the root `README.md` is the single source of truth for the skill index.
 
-[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/kellykampen/agent-skills/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kellykampen/agent-skills/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kellykampen/agent-skills/releases/tag/v0.1.0

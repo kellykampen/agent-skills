@@ -1,0 +1,23 @@
+{
+  "skill_name": "issue-breakdown",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "we're building a notifications feature for our SaaS app \u2014 users should get in-app notifications when someone comments on their post, mentions them, or when their subscription is about to expire, plus a notification bell with an unread count and a settings page to toggle each notification type on/off. can you break this into an epic and issues i can drop into Linear? draft the epic and each issue.",
+      "expected_output": "An epic with what/why/how/key-features, and multiple issues each as a user story with acceptance criteria, a Fibonacci estimate <=3, labels, parent epic, and dependency links (e.g. the notifications backend/model blocks the bell and settings UI).",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "I've got Figma mocks for a redesigned account settings page. It has four tabs \u2014 Profile, Billing, Notifications, and Security \u2014 each with its own form and a save button. Help me turn this into properly-scoped tickets for my team to build.",
+      "expected_output": "A breakdown where the UI/design issues each call out a required design screenshot/PNG export (and optional Figma link), plus user-story format, acceptance criteria, <=3pt estimates, labels, parent, and dependency links.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "break down 'add real-time collaboration to our doc editor' into tickets",
+      "expected_output": "A deliberately large/vague feature decomposed into small <=3pt user stories (nothing left as a giant 5+ point ticket), with acceptance criteria, labels, an epic, and a dependency graph across the pieces (presence, cursors, conflict resolution, sync backend, etc.).",
+      "files": []
+    }
+  ]
+}
