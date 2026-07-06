@@ -37,6 +37,7 @@ Pick the skills you want and the agents to install them on. Or just browse the f
 | --- | --- |
 | [model-classifier](./skills/workflow/model-classifier/SKILL.md) | Classify a task into the single best model to run it on — scored on cost, intelligence, and taste — across a roster of current frontier and budget models. |
 | [skill-maker](./skills/workflow/skill-maker/SKILL.md) | A toolkit for authoring and iterating on Claude Code skills: create, edit, improve, run evals, benchmark, and optimize a skill's description for reliable triggering. |
+| [check-model-usage](./skills/workflow/check-model-usage/SKILL.md) | Check quota/usage and session + weekly pacing across your AI coding harnesses (Claude Code, Codex, Antigravity, GLM, Kimi) in one command, via the [CodexBar](https://github.com/steipete/CodexBar) CLI. |
 
 ## How skills work
 

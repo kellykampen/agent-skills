@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "description": "Reusable Claude Code agent skills — orchestration, code review, and workflow automation.",
+  "description": "Reusable Claude Code agent skills \u2014 orchestration, code review, and workflow automation.",
   "skills": [
     "./skills/agents/agent-orchestrator",
     "./skills/agents/antigravity-cli",
@@ -8,6 +8,7 @@
     "./skills/engineering/coderabbit-request",
     "./skills/engineering/convex-domain-folder",
     "./skills/workflow/skill-maker",
-    "./skills/workflow/model-classifier"
+    "./skills/workflow/model-classifier",
+    "./skills/workflow/check-model-usage"
   ]
 }
