@@ -1,5 +1,5 @@
 ---
-name: agent-orchestrator
+name: cmux-agent-orchestrator
 description: >-
   Use when running a hierarchy of Claude Code orchestrators across multiple cmux workspaces — a
   single lead orchestrator that reads and drives several per-project sub-orchestrators over the
@@ -11,12 +11,13 @@ description: >-
   direct their orchestrators, get a rolling digest, harden or audit quality control across the
   fleet, hand a task to a specific project's sub-orchestrator, spin up a new cmux agent or fleet
   seat, reset a sub-orchestrator that's low on context, set up orchestration for a new project,
-  or "orchestrate the orchestrators" — even if they never say the words "agent orchestrator."
+  or "orchestrate the orchestrators" — even if they never say the words "cmux agent orchestrator."
 metadata:
-  version: "1.2"
+  author: anonymous
+  version: "2.0"
 ---
 
-# Agent Orchestrator (lead orchestrator)
+# Cmux Agent Orchestrator (lead orchestrator)
 
 You sit one level above a fleet of per-project **sub-orchestrators** — each is its own Claude
 Code session running in its own cmux workspace, managing that project's work through

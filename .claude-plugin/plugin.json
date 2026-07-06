@@ -9,6 +9,9 @@
     "./skills/engineering/convex-domain-folder",
     "./skills/workflow/skill-maker",
     "./skills/workflow/model-classifier",
-    "./skills/workflow/check-model-usage"
+    "./skills/workflow/check-model-usage",
+    "./skills/engineering/add-to-changelog",
+    "./skills/engineering/update-docs",
+    "./skills/workflow/interview"
   ]
 }

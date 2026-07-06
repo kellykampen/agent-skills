@@ -30,6 +30,8 @@ Pick the skills you want and the agents to install them on. Or just browse the f
 | --- | --- |
 | [coderabbit-request](./skills/engineering/coderabbit-request/SKILL.md) | Request a [CodeRabbit](https://coderabbit.ai) review of your uncommitted changes and return a structured, severity-categorized issue list. |
 | [convex-domain-folder](./skills/engineering/convex-domain-folder/SKILL.md) | Reorganize a [Convex](https://convex.dev) backend into per-domain folders (schema/queries/mutations/model per domain), handling the api-path and test-resolution changes that trip people up. |
+| [add-to-changelog](./skills/engineering/add-to-changelog/SKILL.md) | Add an entry to `CHANGELOG.md` (Keep a Changelog + SemVer). _User-invoked._ |
+| [update-docs](./skills/engineering/update-docs/SKILL.md) | Update README/docs/CLAUDE.md to match changes since the last git commit. _User-invoked._ |
 
 ### `workflow/` — the AI workflow itself
 
@@ -38,6 +40,7 @@ Pick the skills you want and the agents to install them on. Or just browse the f
 | [model-classifier](./skills/workflow/model-classifier/SKILL.md) | Classify a task into the single best model to run it on — scored on cost, intelligence, and taste — across a roster of current frontier and budget models. |
 | [skill-maker](./skills/workflow/skill-maker/SKILL.md) | A toolkit for authoring and iterating on Claude Code skills: create, edit, improve, run evals, benchmark, and optimize a skill's description for reliable triggering. |
 | [check-model-usage](./skills/workflow/check-model-usage/SKILL.md) | Check quota/usage and session + weekly pacing across your AI coding harnesses (Claude Code, Codex, Antigravity, GLM, Kimi) in one command, via the [CodexBar](https://github.com/steipete/CodexBar) CLI. |
+| [interview](./skills/workflow/interview/SKILL.md) | Interview you in depth (via AskUserQuestion) to turn an idea into a spec — written in place, in `plans/`, or as Linear issues. _User-invoked._ |
 
 ## How skills work
 

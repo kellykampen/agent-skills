@@ -1,8 +1,11 @@
 ---
 name: coderabbit-request
-description: Use after completing file changes - strongest for source code (AST-aware linting, security, tests), lighter support for markdown/config. Dispatches CodeRabbit reviewer subagent. ALWAYS request review before considering work complete.
+description: Use after completing file changes - strongest for source code (AST-aware linting, security, tests), lighter support for markdown/config. Dispatches CodeRabbit reviewer subagent via the gob background runner. ALWAYS request review before considering work complete.
+compatibility: Requires the coderabbit CLI and the gob CLI (background job runner) on PATH, run inside a git repository
 metadata:
-  version: "1.0.1"
+  author: anonymous
+  version: "1.1.0"
+  requires: "gob, coderabbit, git"
 ---
 
 # Requesting Review
@@ -43,16 +46,19 @@ git diff --cached --stat
 
 Document in your mind what was just implemented. This context helps the reviewer subagent understand scope.
 
-### Step 2: Run CodeRabbit in the background
+### Step 2: Run CodeRabbit via gob
 
-CodeRabbit reviews take **1-3 minutes**, so run the CLI as a background task rather than blocking on it. In Claude Code, dispatch it with a background Bash call (`run_in_background`); with any other harness, use whatever background-job mechanism you have (or just run it and wait).
+**CRITICAL: Always use `gob add` for CodeRabbit commands** - they take 1-3 minutes.
 
 ```bash
-# CodeRabbit CLI — review uncommitted changes, succinct output
-coderabbit --prompt-only --type uncommitted
+# Start CodeRabbit in background
+gob add coderabbit --prompt-only --type uncommitted
+
+# Continue working or wait for results
+gob await-any
 ```
 
-The `--prompt-only` flag makes output succinct and token-efficient. (Requires the [CodeRabbit CLI](https://www.coderabbit.ai/cli) to be installed and authenticated.)
+The `--prompt-only` flag makes output succinct and token-efficient.
 
 ### Step 3: Parse Results
 
@@ -78,7 +84,7 @@ Verify:
 
 ### Step 4: Return Results
 
-Return the structured issue list so it can feed your fix workflow — triage each finding (accept / reject / defer), then address the accepted ones (a failing test first where it applies).
+Pass structured issue list to next skill (`coderabbit-triage`).
 
 ## Example Output
 
@@ -147,12 +153,12 @@ Return the structured issue list so it can feed your fix workflow — triage eac
 
 ## Integration Points
 
-This skill produces the review; it's the first step of a review → triage → fix pipeline you drive with your normal workflow:
+This skill feeds directly into `coderabbit-triage`:
 
 ```
-request review   → structured JSON of findings
-        ↓
-triage           → accept / reject / defer each finding
-        ↓
-fix              → address accepted findings (test-first where it applies)
+coderabbit-request
+        ↓ (outputs JSON)
+coderabbit-triage
+        ↓ (outputs task plan)
+coderabbit-fix (parallel or sequential)
 ```
