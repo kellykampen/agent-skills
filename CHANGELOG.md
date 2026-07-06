@@ -10,6 +10,12 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-06
+
+### Added
+
+- `media/cmux-agent-orchestrator-explainer.mp4` — a short explainer video for `cmux-agent-orchestrator` (dark editorial-diagram style: node/arrow hierarchy, model-brand-colored workers, running status captions), linked from its README entry in `skills/agents/README.md`. Built with [Remotion](https://remotion.dev) in the companion `agent-skills-remotion` repo.
+
 ## [0.3.0] - 2026-07-06
 
 ### Added
@@ -56,7 +62,8 @@ Initial collection of reusable Claude Code agent skills.
 
 - Redundant per-category README files — the root `README.md` is the single source of truth for the skill index.
 
-[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/kellykampen/agent-skills/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kellykampen/agent-skills/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/kellykampen/agent-skills/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kellykampen/agent-skills/releases/tag/v0.1.0
