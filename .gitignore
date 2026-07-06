@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Skill eval / benchmark workspaces (local only)
+*-workspace/
+**/evals/results/
+**/.eval-cache/
+
+# Python
+__pycache__/
+*.pyc

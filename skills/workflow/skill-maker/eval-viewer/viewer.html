@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #141a22;
+      --surface-2: #1a212b;
+      --border: #27303c;
+      --border-strong: #394453;
+      --text: #e6ebf2;
+      --text-muted: #8b96a5;
+      --text-faint: #5b6675;
+      --accent: #f0b429;
+      --accent-ink: #0d1117;
+      --accent-hover: #ffc94d;
+      --green: #4ecb71;
+      --green-dim: #2ea04326;
+      --red: #f47067;
+      --red-dim: #f4706726;
+      --neutral: #9fb0c3;
+      --neutral-dim: #9fb0c326;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --font-display: 'Bricolage Grotesque', 'Avenir Next', sans-serif;
+      --font-body: 'IBM Plex Sans', 'Helvetica Neue', sans-serif;
+      --font-mono: 'IBM Plex Mono', 'SF Mono', SFMono-Regular, Menlo, monospace;
+      --glow: #1b2434;
+      color-scheme: dark;
+    }
+
+    /* Light theme: applied when the system prefers light (and no manual dark
+       override), or when the user manually picks light */
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #f4f6f8;
+        --surface: #ffffff;
+        --surface-2: #eef1f5;
+        --border: #dde3ea;
+        --border-strong: #c3ccd7;
+        --text: #1a2330;
+        --text-muted: #57616e;
+        --text-faint: #8792a0;
+        --accent: #b26a00;
+        --accent-ink: #ffffff;
+        --accent-hover: #935700;
+        --green: #1a7f37;
+        --green-dim: #1a7f3718;
+        --red: #cf222e;
+        --red-dim: #cf222e14;
+        --neutral: #57606a;
+        --neutral-dim: #57606a1a;
+        --glow: #e3e9f2;
+        color-scheme: light;
+      }
+    }
+    :root[data-theme="light"] {
+      --bg: #f4f6f8;
+      --surface: #ffffff;
+      --surface-2: #eef1f5;
+      --border: #dde3ea;
+      --border-strong: #c3ccd7;
+      --text: #1a2330;
+      --text-muted: #57616e;
+      --text-faint: #8792a0;
+      --accent: #b26a00;
+      --accent-ink: #ffffff;
+      --accent-hover: #935700;
+      --green: #1a7f37;
+      --green-dim: #1a7f3718;
+      --red: #cf222e;
+      --red-dim: #cf222e14;
+      --neutral: #57606a;
+      --neutral-dim: #57606a1a;
+      --glow: #e3e9f2;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] { color-scheme: dark; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    ::selection { background: #f0b42955; }
+
+    body {
+      font-family: var(--font-body);
+      background:
+        radial-gradient(1200px 400px at 50% -200px, var(--glow) 0%, transparent 70%),
+        var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Header: 3-column grid, counter owns the center — overlap impossible ---- */
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 1rem 2rem;
+      background: transparent;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .header h1 .h1-kicker {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.15rem;
+    }
+    .header .instructions {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      line-height: 1.45;
+      max-width: 46rem;
+    }
+    .progress-strip {
+      display: flex;
+      justify-content: center;
+      padding: 1rem 0 0;
+      flex-shrink: 0;
+    }
+    .progress {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .progress .of { color: var(--text-faint); font-size: 1rem; font-weight: 600; margin: 0 0.15em; }
+    .header-tools { justify-self: end; }
+    .theme-toggle {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      padding: 0.4rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .theme-toggle:hover { color: var(--text); border-color: var(--text-faint); }
+    kbd {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      line-height: 1;
+      padding: 0.28rem 0.42rem;
+      border-radius: 5px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      border-bottom-width: 2px;
+      color: var(--text);
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      max-width: 90rem;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+      overflow: hidden;
+      animation: rise 0.25s ease both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+    .section-header {
+      font-family: var(--font-mono);
+      padding: 0.65rem 1.1rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-faint);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .section-body { padding: 1.1rem; }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary { background: var(--green-dim); color: var(--green); }
+    .config-badge.config-baseline { background: var(--red-dim); color: var(--red); }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    /* ---- Output files ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .output-file + .output-file { margin-top: 0.9rem; }
+    .output-file-header {
+      padding: 0.45rem 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .output-file-header .dl-btn:hover { color: var(--accent); }
+    .output-file-content { padding: 0.85rem; overflow-x: auto; }
+    .output-file-content pre {
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--font-mono);
+      color: var(--text);
+    }
+    .output-file-content img { max-width: 100%; height: auto; border-radius: 4px; }
+    .output-file-content iframe { width: 100%; height: 600px; border: none; background: #fff; border-radius: 4px; }
+    .output-file-content table { border-collapse: collapse; font-size: 0.8125rem; width: 100%; }
+    .output-file-content table td,
+    .output-file-content table th { border: 1px solid var(--border); padding: 0.375rem 0.5rem; text-align: left; }
+    .output-file-content table th { background: var(--surface-2); font-weight: 600; }
+    .output-file-content .download-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover { border-color: var(--accent); }
+    .empty-state { color: var(--text-faint); font-style: italic; padding: 2rem; text-align: center; }
+
+    /* ---- Comparison grid: diff metaphor, old = removal, new = addition ---- */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; }
+    .compare-grid.single { grid-template-columns: 1fr; }
+    .compare-col { min-width: 0; display: flex; flex-direction: column; }
+    .compare-col + .compare-col { border-left: 1px solid var(--border); }
+    .compare-col-header {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      padding: 0.65rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .compare-col-header::before {
+      font-size: 0.85rem;
+      font-weight: 600;
+      width: 1.1rem; height: 1.1rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .before-header { background: var(--red-dim); color: var(--red); }
+    .before-header::before { content: "\2212"; background: #f4706733; }
+    .after-header { background: var(--green-dim); color: var(--green); }
+    .after-header::before { content: "+"; background: #4ecb7133; }
+    .compare-col-body { padding: 0.9rem 1.1rem; flex: 1; }
+    .before-col-body { opacity: 0.82; }
+    @media (max-width: 900px) {
+      .compare-grid { grid-template-columns: 1fr; }
+      .compare-col + .compare-col { border-left: none; border-top: 1px solid var(--border); }
+    }
+
+    /* ---- Per-eval benchmark table ---- */
+    .eval-bench-summary {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-left: 0.6rem;
+      color: var(--text-muted);
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
+    .eval-bench-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .eval-bench-table th, .eval-bench-table td {
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .eval-bench-table tbody tr:last-child td { border-bottom: none; }
+    .eval-bench-table tbody tr:hover td { background: var(--surface-2); }
+    .eval-bench-table th {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-faint);
+    }
+    .eval-bench-table td.mark {
+      text-align: center;
+      width: 4.5rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+    .mark-pass { color: var(--green); }
+    .mark-fail { color: var(--red); }
+    .mark-na { color: var(--text-faint); font-weight: 400; }
+
+    /* ---- Grades (collapsible, unpaired pages) ---- */
+    .grades-toggle { display: flex; align-items: center; cursor: pointer; user-select: none; }
+    .grades-toggle:hover { color: var(--accent); }
+    .grades-toggle .arrow { margin-right: 0.5rem; transition: transform 0.15s; font-size: 0.75rem; }
+    .grades-toggle .arrow.open { transform: rotate(90deg); }
+    .grades-content { display: none; margin-top: 0.75rem; padding: 0 1.1rem 1rem; }
+    .grades-content.open { display: block; }
+    .grades-summary { font-size: 0.875rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .grade-badge {
+      display: inline-block; padding: 0.125rem 0.5rem; border-radius: 9999px;
+      font-size: 0.75rem; font-weight: 600; font-family: var(--font-mono);
+    }
+    .grade-pass { background: var(--green-dim); color: var(--green); }
+    .grade-fail { background: var(--red-dim); color: var(--red); }
+    .assertion-list { list-style: none; }
+    .assertion-item { padding: 0.625rem 0; border-bottom: 1px solid var(--border); font-size: 0.8125rem; }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status { font-weight: 600; margin-right: 0.5rem; }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence { color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; padding-left: 1.5rem; }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 0.25rem; color: var(--text-faint);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 96px;
+      padding: 0.75rem;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      resize: vertical;
+    }
+    .feedback-textarea::placeholder { color: var(--text-faint); }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px #f0b42922;
+    }
+    .feedback-status {
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      margin-top: 0.45rem;
+      min-height: 1.1em;
+      font-family: var(--font-mono);
+    }
+
+    /* ---- Verdict: segmented control ---- */
+    .verdict-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+    .verdict-seg {
+      display: inline-flex;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .verdict-btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      padding: 0.7rem 1.25rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .verdict-seg .verdict-btn + .verdict-btn { border-left: 1px solid var(--border); }
+    .verdict-btn:hover { color: var(--text); background: var(--surface-2); }
+    .verdict-btn kbd { pointer-events: none; }
+    .verdict-btn.selected-down { background: var(--red-dim); color: var(--red); }
+    .verdict-btn.selected-tie { background: var(--neutral-dim); color: var(--neutral); }
+    .verdict-btn.selected-up { background: var(--green-dim); color: var(--green); }
+    .verdict-btn.selected-down kbd, .verdict-btn.selected-tie kbd, .verdict-btn.selected-up kbd { border-color: currentColor; color: inherit; }
+    .verdict-hint { font-size: 0.75rem; color: var(--text-faint); line-height: 1.5; max-width: 34rem; text-align: center; }
+    #feedback-area { display: none; }
+    #feedback-area.visible { display: block; animation: rise 0.2s ease both; }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex; gap: 0;
+      padding: 0 2rem;
+      background: transparent;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: var(--font-body);
+      padding: 0.6rem 1.1rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-faint);
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view { padding: 1.5rem 2rem; overflow-y: auto; flex: 1; max-width: 90rem; width: 100%; margin: 0 auto; }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: var(--font-mono);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .benchmark-table tr:hover { background: var(--surface-2); }
+    .benchmark-table tr.benchmark-row-with { background: var(--green-dim); }
+    .benchmark-table tr.benchmark-row-without { background: var(--red-dim); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border-strong); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+    .benchmark-notes h3 { font-family: var(--font-display); font-size: 0.9rem; margin-bottom: 0.75rem; }
+    .benchmark-notes ul { list-style: disc; padding-left: 1.25rem; }
+    .benchmark-notes li { font-size: 0.8125rem; line-height: 1.6; margin-bottom: 0.375rem; color: var(--text-muted); }
+    .benchmark-empty { color: var(--text-faint); font-style: italic; text-align: center; padding: 3rem; }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0.85rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav > .nav-btn:first-child { justify-self: start; }
+    .nav > .nav-btn:last-child { justify-self: end; }
+    .nav-center { display: flex; align-items: center; gap: 1.25rem; justify-self: center; }
+    .progress-bottom {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .progress-bottom .of { color: var(--text-faint); font-size: 0.85rem; font-weight: 600; margin: 0 0.12em; }
+    .nav-btn {
+      font-family: var(--font-body);
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) { color: var(--text); border-color: var(--text-faint); background: var(--surface-2); }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .done-btn {
+      font-family: var(--font-body);
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .done-btn:hover { color: var(--text); border-color: var(--text-faint); }
+    .done-btn.ready {
+      border-color: transparent;
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+    .done-btn.ready:hover { background: var(--accent-hover); }
+
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: #05080dcc;
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      justify-content: center; align-items: center;
+    }
+    .done-overlay.visible { display: flex; }
+    .done-card {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 24px 80px #000a;
+      max-width: 500px;
+    }
+    .done-card h2 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .done-card p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.55; }
+    .done-card .btn-row { display: flex; gap: 0.5rem; justify-content: center; }
+    .done-card button {
+      padding: 0.5rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover { background: var(--accent-hover); }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem; left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: var(--accent-ink);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible { opacity: 1; }
+
+    /* ---- Scrollbars ---- */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1><span class="h1-kicker">Eval Review</span><span id="skill-name"></span></h1>
+        <div class="instructions">Old output left, new output right, benchmark below. Vote which performed better &mdash; voting advances automatically; "old was better" asks why first.</div>
+      </div>
+      <div class="header-tools">
+        <button class="theme-toggle" id="theme-toggle" onclick="cycleTheme()" title="Theme: follows system by default">&#9681; auto</button>
+      </div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="progress-strip"><div class="progress" id="progress"></div></div>
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Output comparison: old (left) vs new (right); single column when no baseline -->
+      <div class="section">
+        <div class="compare-grid" id="compare-grid">
+          <div class="compare-col" id="col-before" style="display:none;">
+            <div class="compare-col-header before-header">Before &middot; <span id="baseline-badge">old skill</span></div>
+            <div class="compare-col-body before-col-body" id="baseline-body"></div>
+          </div>
+          <div class="compare-col" id="col-after">
+            <div class="compare-col-header after-header" id="outputs-header">Output</div>
+            <div class="compare-col-body" id="outputs-body">
+              <div class="empty-state">No output files found</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Per-eval benchmark: assertion pass/fail for old and new, always visible -->
+      <div class="section" id="eval-bench-section" style="display:none;">
+        <div class="section-header">Benchmark — this eval <span id="eval-bench-summary" class="eval-bench-summary"></span></div>
+        <div class="section-body" id="eval-bench-body"></div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <!-- Paired pages: which skill performed better? -->
+          <div class="verdict-row" id="verdict-compare" style="display:none;">
+            <div class="verdict-seg">
+              <button class="verdict-btn" id="v-old" onclick="setVerdict('old_better')" title="The old output was better — tell me what regressed"><kbd>&#8592;</kbd> Old was better</button>
+              <button class="verdict-btn" id="v-tie" onclick="setVerdict('tie')" title="No meaningful difference"><kbd>&#8593;</kbd> Same</button>
+              <button class="verdict-btn" id="v-new" onclick="setVerdict('new_better')" title="The new output is better — advance to next">New is better <kbd>&#8594;</kbd></button>
+            </div>
+            <span class="verdict-hint">"New" and "Same" jump to the next case; "Old was better" opens a box to say what regressed.</span>
+          </div>
+          <!-- Single-run pages: plain thumbs -->
+          <div class="verdict-row" id="verdict-simple">
+            <div class="verdict-seg">
+              <button class="verdict-btn" id="thumb-up" onclick="setVerdict('up')" title="Looks good — advance to next"><kbd>&#8593;</kbd> Looks good</button>
+              <button class="verdict-btn" id="thumb-down" onclick="setVerdict('down')" title="Something's wrong — tell me what"><kbd>&#8595;</kbd> Needs work</button>
+            </div>
+            <span class="verdict-hint">"Looks good" advances to the next case; "Needs work" opens the feedback box.</span>
+          </div>
+          <div id="feedback-area">
+            <textarea
+              class="feedback-textarea"
+              id="feedback"
+              placeholder="What's wrong with this output? Be as specific as you can."
+            ></textarea>
+            <div class="feedback-status" id="feedback-status"></div>
+          </div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <div class="nav-center">
+        <span class="progress-bottom" id="progress-bottom"></span>
+        <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      </div>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    /*__EMBEDDED_DATA__*/
+
+    // ---- Theme ----
+    // Default follows the system; a manual pick (light/dark) is persisted and
+    // stamps data-theme on <html>, which wins over the system preference.
+    const THEME_KEY = "eval-viewer-theme";
+    const THEME_LABELS = { system: "\u25D1 auto", light: "\u2600 light", dark: "\u263E dark" };
+    function applyTheme(mode) {
+      if (mode === "light" || mode === "dark") {
+        document.documentElement.setAttribute("data-theme", mode);
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+      const btn = document.getElementById("theme-toggle");
+      if (btn) btn.innerHTML = THEME_LABELS[mode] || THEME_LABELS.system;
+    }
+    function cycleTheme() {
+      const order = ["system", "light", "dark"];
+      const cur = localStorage.getItem(THEME_KEY) || "system";
+      const next = order[(order.indexOf(cur) + 1) % order.length];
+      if (next === "system") localStorage.removeItem(THEME_KEY);
+      else localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+    }
+    applyTheme(localStorage.getItem(THEME_KEY) || "system");
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let verdictMap = {};   // run_id -> "up" | "down"
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+    let PAGES = [];        // one page per eval: {key, prompt, primary, baseline}
+
+    // Pair each eval's primary run (with_skill/new_skill) with its baseline run
+    // (old_skill/without_skill) so reviewers see "old did this, new does this"
+    // on ONE page. The verdict/feedback applies to the primary (new) run.
+    function buildPages() {
+      const CONFIGS = ["with_skill", "new_skill", "without_skill", "old_skill"];
+      const groups = new Map();
+      for (const run of EMBEDDED_DATA.runs) {
+        let config = null, key = run.id;
+        for (const c of CONFIGS) {
+          const idx = run.id.indexOf(c);
+          if (idx !== -1) {
+            config = c;
+            key = run.id.slice(0, idx).replace(/-+$/, "");
+            break;
+          }
+        }
+        if (!groups.has(key)) {
+          groups.set(key, { key, prompt: run.prompt, primary: null, baseline: null, extra: [] });
+        }
+        const g = groups.get(key);
+        if (config === "with_skill" || config === "new_skill") {
+          if (!g.primary) g.primary = run; else g.extra.push(run);
+        } else if (config === "without_skill" || config === "old_skill") {
+          if (!g.baseline) { g.baseline = run; g.baselineConfig = config; }
+          else g.extra.push(run);
+        } else {
+          g.extra.push(run);
+        }
+      }
+      const pages = [];
+      for (const g of groups.values()) {
+        if (!g.primary && g.extra.length) g.primary = g.extra.shift();
+        if (!g.primary && g.baseline) { g.primary = g.baseline; g.baseline = null; }
+        if (g.primary) pages.push(g);
+      }
+      return pages;
+    }
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) {
+              feedbackMap[r.run_id] = r.feedback;
+              if (r.verdict) verdictMap[r.run_id] = r.verdict;
+            }
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      PAGES = buildPages();
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < PAGES.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === PAGES.length - 1;
+    }
+
+    // ---- Verdict ----
+    // Paired pages vote on which skill performed better ("old_better" | "tie" |
+    // "new_better"); single-run pages keep plain thumbs ("up" | "down").
+    // "old_better" and "down" are the negative verdicts that require feedback.
+    const NEGATIVE_VERDICTS = new Set(["down", "old_better"]);
+
+    function updateVerdictUI(runId) {
+      const verdict = verdictMap[runId];
+      const paired = !!PAGES[currentIndex].baseline;
+      document.getElementById("verdict-compare").style.display = paired ? "" : "none";
+      document.getElementById("verdict-simple").style.display = paired ? "none" : "";
+
+      document.getElementById("v-old").className =
+        "verdict-btn" + (verdict === "old_better" ? " selected-down" : "");
+      document.getElementById("v-tie").className =
+        "verdict-btn" + (verdict === "tie" ? " selected-tie" : "");
+      document.getElementById("v-new").className =
+        "verdict-btn" + (verdict === "new_better" ? " selected-up" : "");
+      document.getElementById("thumb-up").className =
+        "verdict-btn" + (verdict === "up" ? " selected-up" : "");
+      document.getElementById("thumb-down").className =
+        "verdict-btn" + (verdict === "down" ? " selected-down" : "");
+
+      // Feedback box shows only on a negative verdict, or if text already exists
+      const area = document.getElementById("feedback-area");
+      const hasText = (feedbackMap[runId] || "").trim() !== "";
+      area.className = (NEGATIVE_VERDICTS.has(verdict) || hasText) ? "visible" : "";
+    }
+
+    function setVerdict(verdict) {
+      const run = PAGES[currentIndex].primary;
+      verdictMap[run.id] = verdict;
+      if (!NEGATIVE_VERDICTS.has(verdict)) {
+        // Positive/neutral — any lingering complaint text no longer applies
+        delete feedbackMap[run.id];
+        document.getElementById("feedback").value = "";
+        updateVerdictUI(run.id);
+        saveCurrentFeedback();
+        // Auto-advance so review flows vote-to-vote
+        if (currentIndex < PAGES.length - 1) {
+          setTimeout(() => navigate(1), 150);
+        } else {
+          showToast("Last one reviewed — hit Submit All Reviews when ready.");
+        }
+      } else {
+        updateVerdictUI(run.id);
+        saveCurrentFeedback();
+        document.getElementById("feedback").focus();
+      }
+    }
+
+    // ---- Show a page (primary run + optional baseline) ----
+    function showRun(index) {
+      currentIndex = index;
+      const page = PAGES[index];
+      const run = page.primary;
+
+      // Progress
+      const progressHtml = `${index + 1}<span class="of">/</span>${PAGES.length}`;
+      document.getElementById("progress").innerHTML = progressHtml;
+      document.getElementById("progress-bottom").innerHTML = progressHtml;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = page.prompt;
+
+      // Config badge — the prompt is the same for both runs, so no badge on paired pages
+      const badge = document.getElementById("config-badge");
+      if (page.baseline) {
+        badge.style.display = "none";
+      } else {
+        const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+        if (configMatch) {
+          const config = configMatch[1];
+          const isBaseline = config === "without_skill" || config === "old_skill";
+          badge.textContent = config.replace(/_/g, " ");
+          badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+          badge.style.display = "inline-block";
+        } else {
+          badge.style.display = "none";
+        }
+      }
+
+      // Side-by-side comparison: old (left) vs new (right)
+      renderBaseline(page);
+      document.getElementById("outputs-header").textContent =
+        page.baseline ? "After · new skill" : "Output";
+
+      // Outputs
+      renderOutputs(run);
+
+      // Per-eval benchmark (assertions for both configs, inline on this page)
+      renderEvalBench(page);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Formal Grades collapsible only for unpaired pages — paired pages get
+      // the inline benchmark table instead
+      if (page.baseline) {
+        document.getElementById("grades-section").style.display = "none";
+      } else {
+        renderGrades(run);
+      }
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+      updateVerdictUI(run.id);
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= PAGES.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      renderFilesInto(document.getElementById("outputs-body"), run.outputs || []);
+    }
+
+    // Left column: what the OLD skill (or no skill) produced for the same prompt
+    function renderBaseline(page) {
+      const grid = document.getElementById("compare-grid");
+      const colBefore = document.getElementById("col-before");
+      if (!page.baseline) {
+        colBefore.style.display = "none";
+        grid.classList.add("single");
+        return;
+      }
+      colBefore.style.display = "";
+      grid.classList.remove("single");
+      document.getElementById("baseline-badge").textContent =
+        (page.baselineConfig || "baseline").replace(/_/g, " ");
+      renderFilesInto(document.getElementById("baseline-body"), page.baseline.outputs || []);
+    }
+
+    // Per-eval benchmark table: every assertion with old + new pass/fail, always visible
+    function renderEvalBench(page) {
+      const section = document.getElementById("eval-bench-section");
+      const body = document.getElementById("eval-bench-body");
+      const summary = document.getElementById("eval-bench-summary");
+      const newExp = (page.primary.grading || {}).expectations || [];
+      const oldExp = ((page.baseline || {}).grading || {}).expectations || [];
+      if (newExp.length === 0 && oldExp.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+      section.style.display = "";
+
+      const oldByText = new Map(oldExp.map(e => [e.text, e]));
+      const mark = (e) => {
+        if (!e) return '<td class="mark mark-na">—</td>';
+        const cls = e.passed ? "mark-pass" : "mark-fail";
+        const sym = e.passed ? "&#10003; pass" : "&#10007; fail";
+        const ev = (e.evidence || "").replace(/"/g, "&quot;");
+        return `<td class="mark ${cls}" title="${ev}">${sym}</td>`;
+      };
+
+      let rows = "";
+      for (const e of newExp) {
+        const o = oldByText.get(e.text) || oldExp[newExp.indexOf(e)];
+        rows += `<tr><td>${escapeHtml(e.text)}</td>${mark(o)}${mark(e)}</tr>`;
+      }
+      body.innerHTML =
+        `<table class="eval-bench-table"><thead><tr><th>Assertion</th><th>Old</th><th>New</th></tr></thead><tbody>${rows}</tbody></table>`;
+
+      const count = (exp) => exp.length ? `${exp.filter(e => e.passed).length}/${exp.length}` : "—";
+      summary.textContent = `old ${count(oldExp)} · new ${count(newExp)}`;
+    }
+
+    function escapeHtml(s) {
+      const d = document.createElement("div");
+      d.textContent = s == null ? "" : String(s);
+      return d.innerHTML;
+    }
+
+    function renderFilesInto(container, outputs) {
+      container.innerHTML = "";
+
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = PAGES[currentIndex].primary;
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from feedback + verdict maps
+      const reviews = [];
+      const runIds = new Set([...Object.keys(feedbackMap), ...Object.keys(verdictMap)]);
+      for (const run_id of runIds) {
+        const feedback = feedbackMap[run_id] || "";
+        const verdict = verdictMap[run_id] || "";
+        if (feedback.trim() || verdict) {
+          reviews.push({ run_id, feedback, verdict, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = PAGES[currentIndex].primary;
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — one entry per PAGE (keyed to the
+      // primary/new run, which is what the verdict judges) so the model can
+      // distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const p of PAGES) {
+        reviews.push({
+          run_id: p.primary.id,
+          feedback: feedbackMap[p.primary.id] || "",
+          verdict: verdictMap[p.primary.id] || "",
+          timestamp: ts,
+        });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard shortcuts ----
+    // Paired pages vote with the arrows: Left = old was better, Up = same,
+    // Right = new is better (voting auto-advances, so Right also moves on).
+    // Unpaired pages: Up = thumbs up, Down = thumbs down, Left/Right navigate.
+    // Shift+Left / Shift+Right always navigate without voting.
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+      // Only when the Outputs panel is active
+      if (!document.getElementById("panel-outputs").classList.contains("active")) return;
+
+      const paired = PAGES.length && !!PAGES[currentIndex].baseline;
+
+      if (e.shiftKey && e.key === "ArrowLeft") {
+        e.preventDefault(); navigate(-1); return;
+      }
+      if (e.shiftKey && e.key === "ArrowRight") {
+        e.preventDefault(); navigate(1); return;
+      }
+
+      if (paired) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); setVerdict("old_better"); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setVerdict("tie"); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); setVerdict("new_better"); }
+      } else {
+        if (e.key === "ArrowLeft") { e.preventDefault(); navigate(-1); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); navigate(1); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setVerdict("up"); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); setVerdict("down"); }
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>
