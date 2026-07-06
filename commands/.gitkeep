@@ -1,0 +1,2 @@
+# This dir holds versioned Claude Code slash commands, symlinked to ~/.claude/commands.
+# (kept in git via this placeholder; drop <name>.md files here to add commands)

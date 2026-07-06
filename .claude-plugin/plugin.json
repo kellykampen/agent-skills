@@ -2,7 +2,7 @@
   "name": "agent-skills",
   "description": "Reusable Claude Code agent skills \u2014 orchestration, code review, and workflow automation.",
   "skills": [
-    "./skills/agents/agent-orchestrator",
+    "./skills/agents/cmux-agent-orchestrator",
     "./skills/agents/antigravity-cli",
     "./skills/agents/pr-qc-bot",
     "./skills/engineering/coderabbit-request",
