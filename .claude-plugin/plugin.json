@@ -4,7 +4,7 @@
   "skills": [
     "./skills/agents/cmux-agent-orchestrator",
     "./skills/agents/antigravity-cli",
-    "./skills/agents/pr-qc-bot",
+    "./skills/agents/pull-request-qc-agent",
     "./skills/engineering/coderabbit-request",
     "./skills/engineering/convex-domain-folder",
     "./skills/workflow/skill-maker",

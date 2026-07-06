@@ -22,7 +22,7 @@ Pick the skills you want and the agents to install them on. Or just browse the f
 | --- | --- |
 | [cmux-agent-orchestrator](./skills/agents/cmux-agent-orchestrator/SKILL.md) | Run a hierarchy of Claude Code orchestrators across cmux workspaces — a lead that drives per-project sub-orchestrators, relays decisions, runs digest/watch loops, and enforces evidence-based QC. |
 | [antigravity-cli](./skills/agents/antigravity-cli/SKILL.md) | Drive Google's Antigravity CLI (`agy`) from the shell to delegate coding, review, or bulk work to a *different* (non-Claude) model harness. |
-| [pr-qc-bot](./skills/agents/pr-qc-bot/SKILL.md) | Spin up an autonomous Claude Code instance in a separate cmux pane that watches a GitHub PR end-to-end — drives CI to green, fixes review comments test-first, and replies per thread until it's mergeable. |
+| [pull-request-qc-agent](./skills/agents/pull-request-qc-agent/SKILL.md) | Spin up an autonomous Claude Code instance in a separate cmux pane that watches a GitHub PR end-to-end — drives CI to green, fixes review comments test-first, and replies per thread until it's mergeable. |
 
 ### `engineering/` — code & backend work
 

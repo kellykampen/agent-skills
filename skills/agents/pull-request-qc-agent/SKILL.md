@@ -1,5 +1,5 @@
 ---
-name: pr-qc-bot
+name: pull-request-qc-agent
 description: >-
   Spin up an independent, autonomous Claude Code instance in a separate cmux pane
   that watches a GitHub PR end-to-end: it polls for new review comments and CI
@@ -59,7 +59,7 @@ Brief template:
 
 ```
 You are an autonomous PR QC bot. Own PR #<N> in <repo path> (cd there) until it
-is green and every review comment is answered. Use the `pr-qc-bot` skill — run
+is green and every review comment is answered. Use the `pull-request-qc-agent` skill — run
 its watch loop. You did NOT need to have written this code; verify and fix
 honestly. Work only on this PR's branch. Report back to surface <$CMUX_SURFACE_ID>
 (a one-line "PR#<N>: <status>") and fire a desktop notification when you reach
