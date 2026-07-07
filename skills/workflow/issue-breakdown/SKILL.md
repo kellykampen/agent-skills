@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Issue Breakdown
@@ -44,9 +44,18 @@ Format: **"As a role, I want to action, so result."** The role is a real actor (
 
 If you can't phrase it as one clean story, the issue is probably doing two things — split it.
 
-### 2.2 Explicit acceptance criteria
+### 2.2 Explicit acceptance criteria — as markdown checkboxes
 
-Every issue carries an **Acceptance Criteria** section: a checkable list of conditions that must be true for the issue to be accepted. Make them observable and testable ("archived members disappear from the active list and appear under Archived", "the endpoint returns 403 for non-admins"), not vague ("works correctly"). AC is the contract — it's what the reviewer/QA checks against and what tells the implementer when to stop. No AC = not ready to work.
+Every issue carries an **Acceptance Criteria** section written as a **markdown task list — one `- [ ]` checkbox per condition** — never plain bullets (`-`, `*`), a numbered list, or a prose paragraph. The format is load-bearing, not cosmetic: Linear (and GitHub) render `- [ ]` as **interactive checkboxes** a reviewer/QA ticks off one at a time, and the `linear-ac-verification` flow literally checks these boxes as it confirms each criterion against the running code. A criterion written as a bare bullet can't be ticked, so it drops out of that verification loop — the AC stops being a tracked contract and becomes decoration.
+
+Make each box one **observable, testable** condition — something you could hand to QA for an unambiguous pass/fail ("archived members disappear from the active list and appear under Archived", "the endpoint returns 403 for non-admins"), not vague ("works correctly"). Keep it to **one assertion per box** — don't staple three conditions together with "and", or you can't tick them independently. AC is the contract: it's what the reviewer/QA checks against and what tells the implementer when to stop. No AC — or AC that isn't checkboxes — means not ready to work.
+
+```markdown
+### Acceptance criteria
+- [ ] archived members disappear from the active list and appear under Archived
+- [ ] the bulk-archive action is admin-only (button hidden for members)
+- [ ] the archive endpoint returns 403 for non-admin callers
+```
 
 ### 2.3 Fibonacci estimate, 3 points or less
 
@@ -119,7 +128,7 @@ Whatever the tool: create the **epic first**, then the issues (parented as you g
 The breakdown is done when **every** issue satisfies all of:
 
 - [ ] Phrased as a user story (as a role / I want / so that)
-- [ ] Has an Acceptance Criteria list (observable + testable)
+- [ ] Has an Acceptance Criteria list written as `- [ ]` checkboxes (observable + testable, one assertion per box)
 - [ ] Estimated in Fibonacci and **≤3 points** (prefer 1–2)
 - [ ] Parented to the epic/project
 - [ ] Has dependency links wired (or explicitly "none")
