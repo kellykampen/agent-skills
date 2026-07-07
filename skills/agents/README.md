@@ -51,6 +51,10 @@ Source: [`cmux-agent-orchestrator/SKILL.md`](./cmux-agent-orchestrator/SKILL.md)
 
 An autonomous agent that shepherds a GitHub PR to mergeable, end to end.
 
+![cmux-pr-qc-agent demo](../../media/cmux-pr-qc-agent-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/cmux-pr-qc-agent-explainer.mp4))*
+
 **Install:**
 
 ```bash

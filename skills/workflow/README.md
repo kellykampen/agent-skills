@@ -14,6 +14,10 @@ Meta-skills about the AI development workflow itself.
 
 One command to check quota and pacing across every AI coding harness you use.
 
+![check-model-usage demo](../../media/check-model-usage-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/check-model-usage-explainer.mp4))*
+
 **Install:**
 
 ```bash
@@ -50,6 +54,10 @@ Source: [`check-model-usage/SKILL.md`](./check-model-usage/SKILL.md)
 
 A deep, iterative interview (via AskUserQuestion) that turns an idea into a real spec.
 
+![interview demo](../../media/interview-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/interview-explainer.mp4))*
+
 **Install:**
 
 ```bash
@@ -81,6 +89,10 @@ Source: [`interview/SKILL.md`](./interview/SKILL.md)
 ## issue-breakdown
 
 Break a feature into a Linear epic + small, review-ready issues that all clear a strict quality bar.
+
+![issue-breakdown demo](../../media/issue-breakdown-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/issue-breakdown-explainer.mp4))*
 
 **Install:**
 
@@ -118,6 +130,10 @@ Source: [`issue-breakdown/SKILL.md`](./issue-breakdown/SKILL.md)
 
 Pick the single best model for a task — scored, not guessed.
 
+![model-classifier demo](../../media/model-classifier-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/model-classifier-explainer.mp4))*
+
 **Install:**
 
 ```bash
@@ -150,6 +166,10 @@ Source: [`model-classifier/SKILL.md`](./model-classifier/SKILL.md)
 
 A toolkit for creating, evaluating, and versioning Claude Code skills.
 
+![skill-maker demo](../../media/skill-maker-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/skill-maker-explainer.mp4))*
+
 **Install:**
 
 ```bash
@@ -173,6 +193,8 @@ A skill is only as good as its description (does it trigger when it should?) and
 **How it works**
 
 `init_skill.py` scaffolds a spec-valid `SKILL.md` (semver `x.y.z` from the first commit); `quick_validate.py` hard-fails anything that isn't properly versioned, missing an author, or carrying a malformed `requires`; the eval viewer shows old-vs-new output side by side with arrow-key voting, plus per-eval benchmarks inline.
+
+![skill-maker's eval viewer — old vs. new output side by side, with a pass/fail benchmark table](../../media/skill-maker-eval-viewer.png)
 
 **Requirements**
 

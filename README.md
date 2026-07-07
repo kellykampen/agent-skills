@@ -1,8 +1,15 @@
+<p align="center">
+  <img src="media/banner.png" alt="A lead orchestrator dispatching three project orchestrators, each casting ephemeral workers across Sonnet, Codex, Opus, Gemini, Kimi, and GLM" width="880">
+</p>
+
 # agent-skills
+
+[![release](https://img.shields.io/github/v/release/kellykampen/agent-skills?labelColor=333&color=e2694e)](https://github.com/kellykampen/agent-skills/releases)
+[![license](https://img.shields.io/badge/license-MIT-blue?labelColor=333)](LICENSE)
 
 A small, composable collection of [Claude Code](https://claude.com/claude-code) agent skills for real engineering work — orchestrating fleets of agents, reviewing code, shipping PRs, and building more skills.
 
-Each skill is a self-contained folder with a `SKILL.md` (plus any supporting docs/scripts). They're designed to be **small, easy to adapt, and model-agnostic** — fork them, rename them, make them your own.
+Each skill is a self-contained folder with a `SKILL.md` (plus any supporting docs/scripts). They're designed to be **small, easy to adapt, and model-agnostic** — fork them, rename them, make them your own. Every skill's README has a short demo GIF (full video with audio linked alongside it) so you can see what it actually does before installing.
 
 ## Install
 
@@ -53,6 +60,32 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 | [check-model-usage](./skills/workflow/README.md#check-model-usage) | Check quota/usage and session + weekly pacing across your AI coding harnesses (Claude Code, Codex, Antigravity, GLM, Kimi) in one command, via the [CodexBar](https://github.com/steipete/CodexBar) CLI. |
 | [interview](./skills/workflow/README.md#interview) | Interview you in depth (via AskUserQuestion) to turn an idea into a spec — written in place, in `plans/`, or as Linear issues. _User-invoked._ |
 | [issue-breakdown](./skills/workflow/README.md#issue-breakdown) | Break a feature into a Linear epic + small, review-ready issues with acceptance criteria, Fibonacci ≤3 estimates, and dependency links. |
+
+## Orchestration patterns
+
+`cmux-agent-orchestrator` is one lead relaying an operator's intent down to several **project orchestrators**, each of which casts its own ephemeral **workers** — one process per task, cleared the moment it's done, re-cast for the next one. Any capable model can fill the worker seat; the lead only cares that the result comes back verified.
+
+```mermaid
+flowchart TD
+    O["Operator (you)"] --> L["Lead Orchestrator<br/>relay · enforce"]
+    L -->|dispatch| P1["Project Orchestrator 1"]
+    L -->|dispatch| P2["Project Orchestrator 2"]
+    L -->|dispatch| P3["Project Orchestrator 3"]
+    P1 --> W1["worker — cast, checked,<br/>cleared, re-cast"]
+    P2 --> W2["worker — cast, checked,<br/>cleared, re-cast"]
+    P3 --> W3["worker — cast, checked,<br/>cleared, re-cast"]
+```
+
+`cmux-pr-qc-agent` runs a different shape — a standing **watch loop**, not a one-shot fan-out. It polls, fixes, replies, and pushes on repeat until the PR reaches a stable state, then reports back and exits:
+
+```mermaid
+flowchart LR
+    A["Read state<br/>(CI + comments)"] --> B["Drive CI green<br/>(fix, don't wait)"]
+    B --> C["Handle comments<br/>(test-first fix or reasoned decline)"]
+    C --> D["Commit + push"]
+    D --> A
+    D -.green + all replied.-> E["Report back, exit"]
+```
 
 ## How skills work
 

@@ -10,6 +10,10 @@ Skills for driving a different AI coding harness entirely — not Claude Code.
 
 Delegate work to Google's Antigravity CLI (`agy`) — a different model harness entirely.
 
+![antigravity-cli demo](../../media/antigravity-cli-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/antigravity-cli-explainer.mp4))*
+
 **Install:**
 
 ```bash

@@ -10,6 +10,18 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-06
+
+### Added
+
+- Explainer GIF/video for every skill (11 more, alongside `cmux-agent-orchestrator`'s from 0.4.0): `cmux-pr-qc-agent`, `skill-maker`, `convex-domain-folder`, `antigravity-cli`, `model-classifier`, `add-to-changelog`, `update-docs`, `check-model-usage`, `interview`, `issue-breakdown`, `coderabbit-request` — each linked from its README entry. A real screenshot of `skill-maker`'s eval-viewer tool (old-vs-new output + pass/fail benchmark table) is embedded in its section.
+- README banner image (`media/banner.png`) and two Mermaid flowcharts illustrating `cmux-agent-orchestrator`'s dispatch tree and `cmux-pr-qc-agent`'s watch loop.
+- Release and license badges on the root README.
+
+### Changed
+
+- Root README's project description expanded to mention the per-skill demo GIFs.
+
 ## [0.5.0] - 2026-07-06
 
 ### Changed
@@ -68,7 +80,8 @@ Initial collection of reusable Claude Code agent skills.
 
 - Redundant per-category README files — the root `README.md` is the single source of truth for the skill index.
 
-[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/kellykampen/agent-skills/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/kellykampen/agent-skills/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/kellykampen/agent-skills/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kellykampen/agent-skills/compare/v0.2.0...v0.3.0

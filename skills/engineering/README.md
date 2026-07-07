@@ -13,6 +13,10 @@ Skills for day-to-day code and backend work.
 
 Add a properly-formatted entry to CHANGELOG.md — Keep a Changelog + SemVer.
 
+![add-to-changelog demo](../../media/add-to-changelog-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/add-to-changelog-explainer.mp4))*
+
 **Install:**
 
 ```bash
@@ -48,6 +52,10 @@ Source: [`add-to-changelog/SKILL.md`](./add-to-changelog/SKILL.md)
 ## coderabbit-request
 
 Dispatch a CodeRabbit review of your uncommitted changes and get back a structured issue list.
+
+![coderabbit-request demo](../../media/coderabbit-request-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/coderabbit-request-explainer.mp4))*
 
 **Install:**
 
@@ -85,6 +93,10 @@ Source: [`coderabbit-request/SKILL.md`](./coderabbit-request/SKILL.md)
 
 Reorganize a Convex backend into per-domain folders without breaking anything.
 
+![convex-domain-folder demo](../../media/convex-domain-folder-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/convex-domain-folder-explainer.mp4))*
+
 **Install:**
 
 ```bash
@@ -120,6 +132,10 @@ Source: [`convex-domain-folder/SKILL.md`](./convex-domain-folder/SKILL.md)
 ## update-docs
 
 Sync README, /docs, and CLAUDE.md/AGENTS.md with what actually changed.
+
+![update-docs demo](../../media/update-docs-explainer.gif)
+
+*(silent GIF for inline preview — [full video with audio](../../media/update-docs-explainer.mp4))*
 
 **Install:**
 
