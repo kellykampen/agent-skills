@@ -1,0 +1,22 @@
+[
+  {"query": "can you make a quick explainer video for my cmux-agent-orchestrator skill? like a 20 second hype video", "should_trigger": true},
+  {"query": "I want a gif for my project's README that shows how the onboarding flow works", "should_trigger": true},
+  {"query": "turn this feature into a short demo video with some background music", "should_trigger": true},
+  {"query": "make a remotion video like we did for the last skill, but for model-classifier this time", "should_trigger": true},
+  {"query": "we need a video walkthrough of how the auth flow works for our landing page, something snappy", "should_trigger": true},
+  {"query": "can you find some royalty free music on pixabay and add it to my product demo video", "should_trigger": true},
+  {"query": "I want to add another explainer video to the same remotion project as before, this time for the billing skill", "should_trigger": true},
+  {"query": "create an animated gif showing how the CLI tool works, something snappy for twitter", "should_trigger": true},
+  {"query": "hey can you make a 15s clip explaining what our rate limiter does, similar style to the other ones you made", "should_trigger": true},
+  {"query": "make me a hype video for the new issue-breakdown skill, mp4 and gif please, use lofi music", "should_trigger": true},
+  {"query": "can you edit this mp4 to trim the first 5 seconds, it's too long at the start", "should_trigger": false},
+  {"query": "add background music to my podcast episode, the raw recording is in ~/Downloads/ep12.wav", "should_trigger": false},
+  {"query": "can you write a react component that plays a video with custom controls", "should_trigger": false},
+  {"query": "download a royalty free song from pixabay, I want something for my personal workout playlist", "should_trigger": false},
+  {"query": "make a gif of this screen recording I already have at ~/Desktop/demo.mov", "should_trigger": false},
+  {"query": "can you help me set up remotion for my other project, just the basic install", "should_trigger": false},
+  {"query": "our landing page hero video is broken, can you fix the autoplay bug on mobile safari", "should_trigger": false},
+  {"query": "make me a diagram of how our auth flow works, just a static image is fine", "should_trigger": false},
+  {"query": "can you record a screen capture of me using the app for QA purposes", "should_trigger": false},
+  {"query": "add some background music to my apartment tour video I filmed on my phone", "should_trigger": false}
+]

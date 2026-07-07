@@ -89,6 +89,7 @@ def run_loop(
         all_results = run_eval(
             eval_set=all_queries,
             skill_name=name,
+            skill_path=skill_path,
             description=current_description,
             num_workers=num_workers,
             timeout=timeout,

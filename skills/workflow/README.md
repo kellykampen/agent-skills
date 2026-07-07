@@ -6,6 +6,7 @@ Meta-skills about the AI development workflow itself.
 - [interview](#interview)
 - [issue-breakdown](#issue-breakdown)
 - [model-classifier](#model-classifier)
+- [remotion-explainer-video](#remotion-explainer-video)
 - [skill-maker](#skill-maker)
 
 ---
@@ -159,6 +160,42 @@ Classifies any task description into the best underlying AI model to run it on, 
 Returns a **model**, not a harness or CLI — what actually runs it is a separate decision. Consult it before delegating work to a subagent, casting an Agent/Workflow call, or deciding who implements/reviews/designs a piece of work, rather than picking from memory.
 
 Source: [`model-classifier/SKILL.md`](./model-classifier/SKILL.md)
+
+---
+
+## remotion-explainer-video
+
+Turn a skill, feature, or product into a short explainer video — MP4 + GIF, real music, one command.
+
+**Install:**
+
+```bash
+npx skills add kellykampen/agent-skills --skill remotion-explainer-video
+```
+
+Try without installing:
+
+```bash
+npx skills use kellykampen/agent-skills --skill remotion-explainer-video --agent claude-code
+```
+
+**What it does**
+
+Produces a ~15-30s [Remotion](https://remotion.dev) explainer video for whatever you want explained, rendered in a tested dark editorial-diagram visual system (numbered chapters, boundary-aware curved arrows, node/worker circles, a running status caption) with a real royalty-free soundtrack sourced live from Pixabay Music — output as both an MP4 and a GIF from one build.
+
+**Why it exists**
+
+Every one of this collection's own explainer videos (including `cmux-agent-orchestrator`'s and `model-classifier`'s) came out of the same hand-built process: scaffold a Remotion project, design a scene sequence, fight Cloudflare for a soundtrack, hit the same handful of Remotion gotchas, render, convert to GIF. This skill is that process, captured once so it doesn't get reinvented and re-debugged from scratch every time.
+
+**How it works**
+
+Detects an existing Remotion project in the working directory (or scaffolds a fresh one), copies in a bundled set of reusable diagram primitives (curved arrows with boundary-aware math, node circles, chapter badges, an ephemeral cast/clear lifecycle pattern for anything that repeats), picks a diagram shape that matches the subject's actual structure, iterates via cheap single-frame stills before committing to a full render, then renders through a versioned script that never overwrites a previous cut and converts to GIF via ffmpeg. Sourcing music from Pixabay requires real browser automation, not `curl` — Pixabay's download endpoint sits behind a Cloudflare bot-check that only a real browser session clears.
+
+**Requirements**
+
+Requires `node` and `ffmpeg` on `PATH`, plus a browser-automation tool (cmux or claude-in-chrome) to source music from Pixabay.
+
+Source: [`remotion-explainer-video/SKILL.md`](./remotion-explainer-video/SKILL.md)
 
 ---
 

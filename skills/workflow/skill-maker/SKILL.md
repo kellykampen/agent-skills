@@ -5,7 +5,7 @@ license: Apache-2.0 (see bundled LICENSE.txt)
 compatibility: Requires python3 (standard library only) for its helper scripts.
 metadata:
   author: kellykampen
-  version: "2.4.1"
+  version: "2.5.0"
   requires: "python3"
 ---
 

@@ -10,6 +10,17 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-07-07
+
+### Added
+
+- **`remotion-explainer-video`** skill (`workflow/`) — turns a skill, feature, or product into a short explainer video (MP4 + GIF) with a real royalty-free soundtrack sourced live from Pixabay Music, in the same dark editorial-diagram visual system used across this collection's own videos. 13 skills total.
+
+### Fixed
+
+- `skill-maker`'s trigger-eval harness (`run_eval.py`) tested an unreliable proxy file instead of the real skill, which silently undercounted every true trigger whenever the skill already existed on disk (i.e. essentially always, since `skill-maker`'s own documented flow creates the skill before optimizing its description). Now swaps the real skill's description in place for the duration of a batch, with a backup and signal-safe restore, and tests the actual triggering mechanism directly. `skill-maker` bumped to 2.5.0.
+- `skill-maker`'s description-optimization report (`generate_report.py`) was a wide table with one column per query and full description text repeated in every row — hard to read once there were more than a few queries. Redesigned: queries are now rows, iterations are columns, and each iteration's description appears once in a collapsible list above the table.
+
 ## [0.6.0] - 2026-07-06
 
 ### Added
@@ -80,7 +91,8 @@ Initial collection of reusable Claude Code agent skills.
 
 - Redundant per-category README files — the root `README.md` is the single source of truth for the skill index.
 
-[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/kellykampen/agent-skills/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/kellykampen/agent-skills/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/kellykampen/agent-skills/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/kellykampen/agent-skills/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/kellykampen/agent-skills/compare/v0.3.0...v0.4.0

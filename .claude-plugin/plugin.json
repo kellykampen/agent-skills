@@ -13,6 +13,7 @@
     "./skills/engineering/add-to-changelog",
     "./skills/engineering/update-docs",
     "./skills/workflow/interview",
-    "./skills/workflow/issue-breakdown"
+    "./skills/workflow/issue-breakdown",
+    "./skills/workflow/remotion-explainer-video"
   ]
 }

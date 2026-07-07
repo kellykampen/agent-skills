@@ -56,6 +56,7 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 | Skill | What it does |
 | --- | --- |
 | [model-classifier](./skills/workflow/README.md#model-classifier) | Classify a task into the single best model to run it on — scored on cost, intelligence, and taste — across a roster of current frontier and budget models. |
+| [remotion-explainer-video](./skills/workflow/README.md#remotion-explainer-video) | Turn a skill, feature, or product into a short explainer video (MP4 + GIF) with a real royalty-free soundtrack sourced live from Pixabay Music. |
 | [skill-maker](./skills/workflow/README.md#skill-maker) | A toolkit for authoring and iterating on Claude Code skills: create, edit, improve, run evals, benchmark, and optimize a skill's description for reliable triggering. |
 | [check-model-usage](./skills/workflow/README.md#check-model-usage) | Check quota/usage and session + weekly pacing across your AI coding harnesses (Claude Code, Codex, Antigravity, GLM, Kimi) in one command, via the [CodexBar](https://github.com/steipete/CodexBar) CLI. |
 | [interview](./skills/workflow/README.md#interview) | Interview you in depth (via AskUserQuestion) to turn an idea into a spec — written in place, in `plans/`, or as Linear issues. _User-invoked._ |
