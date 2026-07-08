@@ -51,6 +51,13 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 | [add-to-changelog](./skills/engineering/README.md#add-to-changelog) | Add an entry to `CHANGELOG.md` (Keep a Changelog + SemVer). _User-invoked._ |
 | [update-docs](./skills/engineering/README.md#update-docs) | Update README/docs/CLAUDE.md to match changes since the last git commit. _User-invoked._ |
 
+### [`communication/`](./skills/communication/README.md) — email & messaging inboxes
+
+| Skill | What it does |
+| --- | --- |
+| [gmail-inbox-zero-triage](./skills/communication/README.md#gmail-inbox-zero-triage) | Daily Gmail triage toward inbox zero — buckets unread mail into Urgent/Reply Soon/Waiting/FYI with a specific suggested action per email, and never executes anything without explicit approval. |
+| [gmail-oib-zero](./skills/communication/README.md#gmail-oib-zero) | Bulk-clear a secondary filtered Gmail label to zero, grouped by sender/domain instead of itemized one by one. |
+
 ### [`workflow/`](./skills/workflow/README.md) — the AI workflow itself
 
 | Skill | What it does |
