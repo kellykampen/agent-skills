@@ -14,7 +14,7 @@ description: >-
 compatibility: Requires cmux, the GitHub CLI (`gh`), and git.
 metadata:
   author: kellykampen
-  version: "1.0.2"
+  version: "1.1.0"
   requires: "cmux, gh, git"
 ---
 
@@ -99,9 +99,12 @@ The bot repeats this until the exit condition. Each pass:
      pushed (see guardrails).
 4. **Commit + push** the round's work with a clear message. Batch a round's fixes
    into sensible commits; don't push half-built states.
-5. **Decide.** If CI is green AND there are zero unreplied threads, you've reached
-   a stable state — report back and either exit or drop to a light watch per the
-   user's instruction. Otherwise sleep a sensible interval and loop.
+5. **Decide.** CI-green + zero unreplied threads is necessary but **not sufficient**
+   for "done." A PR is *mergeable-clean* only when ALL of: CI green · zero unreplied
+   threads · an **independent different-model review** posted on the PR · and every
+   **acceptance criterion of the linked issue independently verified with its `- [ ]`
+   checkbox checked** (see "The Done gate" below). If all hold, report back and exit or
+   drop to a light watch. Otherwise sleep a sensible interval and loop.
 
 ### Polling cadence
 
@@ -111,6 +114,47 @@ passes. Crucially: **the moment you reach green + all-replied, report back** —
 user shouldn't have to wonder whether you're still working. If nothing new arrives
 for a couple of cycles after that, exit cleanly (a merged/closed PR also ends the
 loop).
+
+## The Done gate — AC verification & independent review
+
+Green CI and answered comments are necessary but **not sufficient**. The failure this
+prevents (learned the hard way): PRs and their linked Linear issues marked **Done** while the
+acceptance criteria were never actually confirmed — because the AC were bullet points nobody
+could tick, or checkboxes checked on a "looks done" claim. Before you call a PR mergeable-clean:
+
+- **AC must be `- [ ]` checkboxes.** If the linked issue's acceptance criteria are plain
+  bullets/prose, they can't be verified or ticked — convert them to markdown `- [ ]` checkboxes
+  first, one observable, testable assertion per box. A bullet is uncheckable, so it can never be
+  confirmed or closed — which is exactly how "Done" issues end up holding unverified work.
+- **Verify each AC against the running code, THEN check its box.** For every criterion, actually
+  confirm it — run the test, hit the endpoint, drive the UI, trace the code path — via the
+  [`linear-ac-verification`](../linear-ac-verification/SKILL.md) skill. A box is checked **only
+  after** that specific criterion is verified against reality. Never self-check, never tick a box
+  on a claim. An issue is **not Done until every box is checked**, and a PR that closes an issue
+  isn't clean until they are.
+- **Independent, different-model review — evidenced ON the PR.** The review must come from a
+  **different model** than whoever wrote the code (fresh eyes, no authoring bias), and it must be
+  **posted as a comment on the PR**. A review that lives only in a log or a chat message does not
+  count; the same goes for AC-verification — leave the evidence on the PR/issue where the next
+  person can see it.
+
+Shorthand: *"verified locally" ≠ done · "reviewed" ≠ done unless it's a different model and it's
+on the PR · "CI green" ≠ done unless the AC are independently checked.* All three, evidenced, or
+it isn't mergeable-clean.
+
+## Gotchas
+
+- **Invoking a non-Claude reviewer.** Getting a *different-model* review cheaply means reaching
+  for non-Claude harnesses — `claudekimi` / `claudeglm` (Kimi / GLM) or `agy` (Gemini). But
+  `claudekimi`/`claudeglm` are shell functions whose `_claude_provider_token` helper and API keys
+  load **only in an interactive shell**, so a bare non-interactive call fails with
+  `command not found: _claude_provider_token`. Always invoke them through an interactive login
+  shell: `zsh -ic 'claudekimi -p "<review prompt>"'`. **Never print the resolved token** — it's a
+  secret (echoing an unset-guard like `${KEY:-…}` will leak it).
+- **Pick the reviewer model by what's actually up.** Provider pools go down or dry out; before
+  leaning on one, a trivial probe (`zsh -ic 'claudekimi -p "reply OK"'`) tells you it responds.
+  Fall back across Kimi / GLM / Gemini rather than silently substituting the *same* model that
+  wrote the code (that defeats the independence the gate exists for).
 
 ## Guardrails (because it pushes and posts on its own)
 
