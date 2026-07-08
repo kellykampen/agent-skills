@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Issue Breakdown
@@ -56,6 +56,8 @@ Make each box one **observable, testable** condition — something you could han
 - [ ] the bulk-archive action is admin-only (button hidden for members)
 - [ ] the archive endpoint returns 403 for non-admin callers
 ```
+
+**These boxes are the Definition of Done.** An issue is **not Done until every AC checkbox is checked** — moving an issue to Done with unchecked (or bullet-point, un-checkable) AC is a defect, not a done issue. And a box may **only be checked after an independent agent has verified that specific criterion against the actual codebase** — ran the test, hit the endpoint, saw the behavior — via the `linear-ac-verification` skill or an independent reviewer. Never self-check, never tick a box on a claim or a "looks done." This is why the format matters: a bullet can't be checked, so it can never be verified or closed — which is exactly how "Done" issues end up with work that was never actually confirmed.
 
 ### 2.3 Fibonacci estimate, 3 points or less
 
