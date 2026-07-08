@@ -4,12 +4,19 @@ Scaffold a new, spec-valid skill directory with versioned frontmatter.
 
 Usage:
     python init_skill.py <skill-name> --path <parent-dir> [--description "..."]
-                         [--author your-name] [--with-scripts] [--with-references]
-                         [--with-assets]
+                         [--author your-name] [--compatibility "Requires ..."]
+                         [--requires "tool1, tool2"] [--with-scripts]
+                         [--with-references] [--with-assets]
 
 Creates <parent-dir>/<skill-name>/SKILL.md with frontmatter that passes
 quick_validate.py (name rules, description, metadata.author + metadata.version "1.0.0" (semver x.y.z)),
 plus optional resource directories, then validates the result.
+
+If the skill has external CLI/tool dependencies, pass --compatibility (a one-line
+human-readable sentence) and --requires (a comma-separated list of tool names on
+PATH) together — see any skill in this collection with a "Requirements" line in
+its README (e.g. check-model-usage, skill-maker itself) for the pattern. Omit
+both when the skill is pure reasoning / built-in tools only.
 """
 
 import argparse
@@ -18,14 +25,7 @@ import re
 import sys
 from pathlib import Path
 
-SKILL_TEMPLATE = """---
-name: {name}
-description: {description}
-metadata:
-  author: {author}
-  version: "1.0.0"
----
-
+SKILL_BODY_TEMPLATE = """
 # {title}
 
 <!-- One-paragraph statement of what this skill helps the agent do and the
@@ -58,6 +58,20 @@ Deterministic, frequently-reinvented logic goes in scripts/. -->
 """
 
 
+def build_frontmatter(name: str, description: str, author: str, compatibility: str | None, requires: str | None) -> str:
+    # json.dumps produces a valid YAML double-quoted scalar (handles colons/quotes)
+    lines = ["---", f"name: {name}", f"description: {json.dumps(description)}"]
+    if compatibility:
+        lines.append(f"compatibility: {json.dumps(compatibility)}")
+    lines.append("metadata:")
+    lines.append(f"  author: {author}")
+    lines.append('  version: "1.0.0"')
+    if requires:
+        lines.append(f"  requires: {json.dumps(requires)}")
+    lines.append("---\n")
+    return "\n".join(lines)
+
+
 def validate_name(name: str) -> str | None:
     if not 1 <= len(name) <= 64:
         return f"name must be 1-64 characters (got {len(name)})"
@@ -76,6 +90,8 @@ def main() -> int:
     parser.add_argument("--path", type=Path, default=Path.home()/".claude/skills", help="Parent directory the skill folder is created in (default: ~/.claude/skills)")
     parser.add_argument("--description", default="TODO: what this skill does AND when to use it (this is the trigger — be pushy and specific).", help="Frontmatter description")
     parser.add_argument("--author", default="anonymous", help='metadata.author value (default: anonymous — set to your own name)')
+    parser.add_argument("--compatibility", default=None, help='One-line compatibility sentence, e.g. "Requires the gh CLI and git." Pair with --requires; omit both if there are no external deps.')
+    parser.add_argument("--requires", default=None, help='metadata.requires: comma-separated tool names on PATH, e.g. "gh, git". Pair with --compatibility.')
     parser.add_argument("--with-scripts", action="store_true", help="Create scripts/ directory")
     parser.add_argument("--with-references", action="store_true", help="Create references/ directory")
     parser.add_argument("--with-assets", action="store_true", help="Create assets/ directory")
@@ -93,10 +109,9 @@ def main() -> int:
 
     skill_dir.mkdir(parents=True)
     title = args.name.replace("-", " ").title()
-    # json.dumps produces a valid YAML double-quoted scalar (handles colons/quotes)
-    (skill_dir / "SKILL.md").write_text(
-        SKILL_TEMPLATE.format(name=args.name, description=json.dumps(args.description), author=args.author, title=title)
-    )
+    frontmatter = build_frontmatter(args.name, args.description, args.author, args.compatibility, args.requires)
+    body = SKILL_BODY_TEMPLATE.format(title=title)
+    (skill_dir / "SKILL.md").write_text(frontmatter + body)
     for flag, sub in [(args.with_scripts, "scripts"), (args.with_references, "references"), (args.with_assets, "assets")]:
         if flag:
             (skill_dir / sub).mkdir()
