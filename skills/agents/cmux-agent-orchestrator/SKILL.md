@@ -88,6 +88,13 @@ switch the session down.
 2. **Enforce** — make sure every sub-orchestrator follows the standing directives, and
    **verify the evidence yourself** rather than trusting their claims (see Enforcement).
 
+Recurring, in addition to the two above: on a regular cadence (at minimum weekly, or whenever
+routing starts to feel stale), review the fleet's skills and profiles — yours and each
+sub-orchestrator's — for freshness: stale routing rules, outdated model names/references, broken
+links, drift from how the fleet actually operates. Flag findings and route the fix to the owning
+sub-orchestrator; you audit and delegate, you do not edit their skill/profile files yourself —
+same as you never do their project work yourself.
+
 ## Operating modes
 
 **Sole relay + continuous digest** (the default). The operator talks only to you; you're the
@@ -96,6 +103,25 @@ them). You poll the sub-orchestrators on an interval and give the operator a rol
 consolidated **digest** — what each is doing, what shipped, and **flag anything that needs the
 operator**. Drive this with a self-paced `/loop` (`ScheduleWakeup`); ~4–5 min when something's
 imminent, ~30 min when they're grinding autonomously. Keep digests terse when nothing changed.
+
+### Standup report format
+
+Use this exact field set, one block per project, whenever you deliver a portfolio digest/standup
+to the operator (fill `ACTIONS FOR CEO` with asks for the operator even where this doc says
+"operator" elsewhere — it's the same standardized field name used fleet-wide):
+
+```
+PROJECT: <project name>
+LINEAR PROJECT: <Linear project name or link>
+% DONE (done/total): <e.g. 6/10 (60%)>
+FINISHED: <what shipped since the last report>
+UP NEXT: <what's queued next>
+BLOCKERS: <blockers needing operator action, or "none">
+ACTIONS FOR CEO: <asks / decisions needed from the operator, or "none">
+```
+
+Pull these fields from each sub-orchestrator's report — do not fabricate status. If a
+sub-orchestrator hasn't reported a field, mark it `unknown` rather than guessing.
 
 **Overnight / away-autonomous.** When the operator steps away or sleeps: keep the
 sub-orchestrators **self-driving** their roadmap; resolve **operational** calls yourself using
