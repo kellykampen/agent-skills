@@ -3,20 +3,26 @@ name: convex-domain-folder
 description: >-
   Reorganize a Convex backend into per-domain folders — the pattern where each
   domain owns convex/DOMAIN/schema.ts (exporting DOMAINTables, spread into
-  the root schema) plus optional queries.ts / mutations.ts / model.ts. Use this
-  whenever moving a flat convex/NAME.ts into a convex/NAME/ subdirectory,
-  splitting a growing Convex function file, extracting table definitions out of
-  a monolithic schema.ts, or when the user says things like "move X into a subdir
-  like we did for tasks", "break this Convex file up", "follow the same
-  structure", or "modularize the schema". Covers the Convex function-path changes
-  (api.DOMAIN.queries.*), relative-import repointing, and the convex-test glob
-  re-rooting that co-located tests need. Reach for it even when the request sounds
-  like a trivial file move — the api-path and test-resolution consequences are
-  easy to get wrong.
+  the root schema) plus optional queries.ts / mutations.ts / model.ts, further
+  split into internal/private/public trust-tier subfolders once a domain has
+  more than one trust boundary, and an optional convex/DOMAIN/http.ts exporting
+  a registerDomainRoutes(app) composed into the root http.ts the same way
+  domain schemas compose into root schema.ts. Use this whenever moving a flat
+  convex/NAME.ts into a convex/NAME/ subdirectory, splitting a growing Convex
+  function file by trust tier (internal vs private vs public), extracting table
+  definitions out of a monolithic schema.ts, moving HTTP routes into a domain
+  folder, or when the user says things like "move X into a subdir like we did
+  for tasks/users", "break this Convex file up", "follow the same structure",
+  "split into internal/private/public", or "modularize the schema/http routes".
+  Covers the Convex function-path changes (api.DOMAIN.TIER.queries.*),
+  relative-import repointing, and the convex-test glob re-rooting that
+  co-located tests need. Reach for it even when the request sounds like a
+  trivial file move — the api-path and test-resolution consequences are easy
+  to get wrong.
 compatibility: Requires a Convex project with the `convex` CLI available (for codegen).
 metadata:
   author: kellykampen
-  version: "1.1.1"
+  version: "1.2.0"
   requires: "convex"
 ---
 
@@ -31,14 +37,29 @@ domain, where each domain owns its tables and its functions:
 ```
 convex/
   schema.ts              # just spreads: ...usersTables, ...tasksTables, ...
+  http.ts                # thin composition root: calls each registerXRoutes(app)
   tasks/
     schema.ts            # exports tasksTables (table defs, NOT defineSchema)
-    queries.ts           # api.tasks.queries.*
+    queries.ts           # api.tasks.queries.*  (single-tier domain, no trust split needed)
     mutations.ts         # api.tasks.mutations.*
     model.ts             # shared helpers/validators (no Convex functions)
     tasks.test.ts        # co-located test (needs glob re-rooting, see below)
   companies/
     schema.ts            # data-only domain -> schema.ts is the ONLY file
+  users/
+    schema.ts            # exports usersTables
+    helpers.ts            # shared helpers, used across ALL tiers below (not tiered itself)
+    validators.ts          # shared validators, ditto
+    triggers.ts            # Convex triggers, ditto
+    internal/
+      queries.ts          # api path: internal.users.internal.queries.*  (internalQuery)
+      mutations.ts        # internalMutation — convex-only, never client-callable
+    private/
+      queries.ts          # api.users.private.queries.*  (query, requires an authed user)
+      mutations.ts        # api.users.private.mutations.*
+      actions.ts           # action, also requires an authed user
+    public/
+      queries.ts           # api.users.public.queries.*  (query, no auth required)
 ```
 
 The root `schema.ts` becomes a thin composition root — a few imports and spreads,
@@ -127,23 +148,66 @@ pieces — return-shape validators, sort helpers, auth gates like `requireUser`.
 Convex only registers exports that are `query`/`mutation`/etc., so a module of
 plain functions and validators registers nothing; it's just a helper module (the
 same reason a `schema.ts` full of `defineTable` calls doesn't create functions).
+The name itself isn't load-bearing — some domains call it `model.ts`, this
+codebase's convention is `helpers.ts` (plus a separate `validators.ts` when
+validators outgrow the helpers file); match whatever the surrounding domains
+already use rather than introducing a third name.
 
 Relative imports shift one level deeper: `./_generated/server` →
 `../_generated/server`, `./constants` → `../constants`, and a sibling helper
 becomes `./model`.
 
+## Step 2b — Split by trust tier (once a domain has more than one)
+
+Kind-first (`queries.ts`/`mutations.ts` at the domain root) is the right default
+for a domain with one trust boundary. Once a domain's functions actually span
+more than one — some convex-only, some requiring a logged-in user, some open to
+anyone — nest the kind files one level deeper, under a tier folder instead:
+
+- `<domain>/internal/` — `internalQuery` / `internalMutation` / `internalAction`.
+  Convex-only: callable by triggers, other server functions, and scheduled jobs,
+  **never** from client code. This is Convex's own built-in privacy boundary —
+  the framework enforces it, nothing to double-check.
+- `<domain>/private/` — plain `query` / `mutation` / `action`, client-callable,
+  but every handler starts by resolving and checking an authenticated user (e.g.
+  a `getAuthUserId`/`requireUser`-style gate from the domain's `helpers.ts` or
+  `model.ts`). Convex does **not** enforce this tier for you — it's a naming +
+  code-review convention, not a framework guarantee, so the auth check inside
+  the handler is the real boundary, not the folder name.
+- `<domain>/public/` — plain `query` / `mutation`, reachable by authenticated
+  *and* unauthenticated clients. Generally queries — read paths that are safe to
+  expose with no auth (username availability, public profile lookups) — but a
+  domain can have public mutations too (e.g. an unauthenticated support-ticket
+  submission) when the operation is genuinely meant to be open.
+
+Shared pieces that don't belong to any one tier — `helpers.ts`, `validators.ts`,
+`triggers.ts`, `model.ts` — stay flat at the domain root, *not* inside a tier
+folder, exactly like before. They register no Convex functions, so they have no
+tier of their own; every tier imports from them.
+
+**Don't force every domain into three tiers.** A domain with only convex-only
+helpers and one authenticated CRUD surface needs `internal/` + `private/`, not
+an empty `public/` folder. Nest by tier only when a domain genuinely has more
+than one trust boundary in play — otherwise Step 2's flat `queries.ts`/
+`mutations.ts` is still correct and simpler.
+
 ## Step 3 — Repoint every call site
 
 The api paths changed. Fix them:
 
-- Backend importers of relocated helpers: `from "../users"` → `from "../users/model"`
-- Frontend + tests: `api.<domain>.<fn>` → `api.<domain>.queries.<fn>` or
+- Backend importers of relocated helpers: `from "../users"` → `from "../users/helpers"`
+- Frontend + tests, kind-only split: `api.<domain>.<fn>` → `api.<domain>.queries.<fn>` or
   `api.<domain>.mutations.<fn>`
+- Frontend + tests, tiered split: `api.<domain>.<fn>` → `api.<domain>.<tier>.queries.<fn>`,
+  e.g. `api.<domain>.private.mutations.<fn>` or, for convex-only callers,
+  `internal.<domain>.internal.queries.<fn>`
 
 **Example**
 
 Input: a component calling `useQuery(api.tasks.list)` and `useMutation(api.tasks.create)`
-Output: `useQuery(api.tasks.queries.list)` and `useMutation(api.tasks.mutations.create)`
+Output (kind-only): `useQuery(api.tasks.queries.list)` and `useMutation(api.tasks.mutations.create)`
+Output (tiered, e.g. users): `useQuery(api.users.public.queries.getUserByUsername)` and
+`useMutation(api.users.private.mutations.updateProfile)`
 
 Then delete the old flat file (`rm convex/<domain>.ts`).
 
@@ -154,6 +218,53 @@ module `tasks/index` — api path `api.tasks.index.*`, CLI `tasks/index:fn`. Tha
 `.index` segment is almost never what you want. Use named files (`queries.ts`,
 `mutations.ts`) instead. If you ever must confirm a path, check the generated
 `convex/_generated/api.d.ts` — the module keys are literal file paths.
+
+## Spreading `http.ts` the same way as `schema.ts`
+
+HTTP routes (Hono/`httpRouter` endpoints, as opposed to Convex functions) get
+the same domain-folder treatment as tables — with one mechanical difference.
+`defineSchema` takes a plain object, so domain schemas compose by literal
+`...spread`. Hono's `app.route()`/`app.openapi()` register routes as a *side
+effect* on a shared app instance — there's no plain-object form to spread —
+so the composition seam is a **function call**, not a spread, even though the
+intent (root file is a thin list of domain imports, zero inline route
+definitions) is identical:
+
+```ts
+// convex/tasks/http.ts
+import type { OpenAPIHono } from "@hono/zod-openapi";
+import type { ConvexEnv } from "../lib/honoHelpers";
+
+export function registerTasksRoutes(app: OpenAPIHono<ConvexEnv>) {
+  app.openapi(someRoute, async (c) => { /* ... */ });
+}
+```
+
+```ts
+// convex/http.ts
+import { registerTasksRoutes } from "./tasks/http";
+import { registerUsersRoutes } from "./users/http";
+
+registerTasksRoutes(app);
+registerUsersRoutes(app);
+```
+
+Conventions:
+
+- The domain file is always named `http.ts` (matching `schema.ts`'s naming),
+  exporting a single `register<Domain>Routes(app)` function. Older domains in
+  this codebase may still use `api.ts` with a differently-named export — that's
+  a naming inconsistency from before this convention existed; match it when
+  extending an existing file, but write new domain HTTP files as `http.ts` +
+  `register<Domain>Routes`.
+- Only domains that actually expose raw HTTP endpoints (webhooks, beacon/tracking
+  pixels, non-Convex-client integrations) need an `http.ts`. Most domains are
+  reached purely through `query`/`mutation`/`action` and have no HTTP surface at
+  all — don't manufacture an empty one.
+- `http.ts` is independent of the internal/private/public split above — HTTP
+  routes have their own auth story (a route handler checks a header, webhook
+  signature, or session cookie directly; it isn't gated by which folder it's
+  defined in), so don't try to force HTTP routes into a tier folder.
 
 ## Co-located tests: re-root the convex-test glob
 
@@ -211,9 +322,18 @@ registration and that the old flat `<domain>` module is gone.
 ## Why this holds together
 
 - The **spread seam** (`...<domain>Tables`) is why schema files compose without
-  friction — it's plain JS, and types key off table names not files.
+  friction — it's plain JS, and types key off table names not files. `http.ts`
+  wants the same seam but Hono forces a function-call composition instead —
+  same intent (thin root, one line per domain), different mechanism.
 - The **no-op push** is your safety proof: a structural reorg must not change the
   deployed schema, and Convex tells you by showing no index churn.
-- Splitting **model.ts** out keeps `queries.ts`/`mutations.ts` thin and lets other
-  domains reuse gates like `requireUser` without a circular dependency, because
-  helper modules register no functions.
+- Splitting **model.ts/helpers.ts** out keeps `queries.ts`/`mutations.ts` thin
+  and lets other domains — and every trust tier within the same domain — reuse
+  gates like `requireUser` without a circular dependency, because helper
+  modules register no functions.
+- The **internal/private/public split** makes the trust boundary visible in the
+  file tree instead of buried in each handler's first line — but only Convex's
+  own `internal*` functions are actually enforced by the framework; `private`
+  vs `public` is a convention the auth-check code inside the handler has to
+  honor, so reviewing a "private" file means checking the auth gate is really
+  there, not just trusting the folder name.
