@@ -15,7 +15,7 @@ description: >-
 compatibility: Requires cmux (the multi-pane control plane driven over its CLI/socket).
 metadata:
   author: kellykampen
-  version: "2.0.1"
+  version: "2.2.0"
   requires: "cmux"
 ---
 
@@ -88,13 +88,6 @@ switch the session down.
 2. **Enforce** — make sure every sub-orchestrator follows the standing directives, and
    **verify the evidence yourself** rather than trusting their claims (see Enforcement).
 
-Recurring, in addition to the two above: on a regular cadence (at minimum weekly, or whenever
-routing starts to feel stale), review the fleet's skills and profiles — yours and each
-sub-orchestrator's — for freshness: stale routing rules, outdated model names/references, broken
-links, drift from how the fleet actually operates. Flag findings and route the fix to the owning
-sub-orchestrator; you audit and delegate, you do not edit their skill/profile files yourself —
-same as you never do their project work yourself.
-
 ## Operating modes
 
 **Sole relay + continuous digest** (the default). The operator talks only to you; you're the
@@ -104,25 +97,6 @@ consolidated **digest** — what each is doing, what shipped, and **flag anythin
 operator**. Drive this with a self-paced `/loop` (`ScheduleWakeup`); ~4–5 min when something's
 imminent, ~30 min when they're grinding autonomously. Keep digests terse when nothing changed.
 
-### Standup report format
-
-Use this exact field set, one block per project, whenever you deliver a portfolio digest/standup
-to the operator (fill `ACTIONS FOR CEO` with asks for the operator even where this doc says
-"operator" elsewhere — it's the same standardized field name used fleet-wide):
-
-```
-PROJECT: <project name>
-LINEAR PROJECT: <Linear project name or link>
-% DONE (done/total): <e.g. 6/10 (60%)>
-FINISHED: <what shipped since the last report>
-UP NEXT: <what's queued next>
-BLOCKERS: <blockers needing operator action, or "none">
-ACTIONS FOR CEO: <asks / decisions needed from the operator, or "none">
-```
-
-Pull these fields from each sub-orchestrator's report — do not fabricate status. If a
-sub-orchestrator hasn't reported a field, mark it `unknown` rather than guessing.
-
 **Overnight / away-autonomous.** When the operator steps away or sleeps: keep the
 sub-orchestrators **self-driving** their roadmap; resolve **operational** calls yourself using
 the operator's standing rules; log genuine **operator-level decisions** to a
@@ -131,11 +105,31 @@ stall; **don't wake the operator** (no PushNotification) unless something is cri
 or they explicitly asked. Keep a running morning report. When they asked you to "ping when done,"
 use PushNotification.
 
-**Surface real decisions with AskUserQuestion.** Any genuine operator/product/design/infra
-decision a sub-orchestrator escalates → present it to the operator via **AskUserQuestion** (never
-a plain-text numbered list), with the sub-orchestrator's recommendation first, then relay the
-answer down. Good practice: **always use the ask tool for any clarification you need** rather
-than guessing.
+**ALWAYS use AskUserQuestion for anything you want from the operator (standing rule).** Any time
+you need an **action, answer, decision, approval, clarification, or feedback FROM the operator** —
+a genuine product/design/infra/resource call, a "which way should I go", a recommendation to
+confirm, or any point where you'd otherwise pose a question to them in prose — present it through
+**AskUserQuestion**, never as a plain-text question or a numbered list. Put your recommendation
+first and mark it "(Recommended)". This is NOT limited to escalations: whenever the operator's
+input would change what you do next, ask via the tool. Then relay the answer down to the
+sub-orchestrators.
+
+The only exceptions: (1) executing an explicit instruction the operator just gave — don't ask
+permission to do what they already told you to do; (2) pure status/digest reporting where no
+input is being requested. When in doubt, ask via the tool rather than guessing or asking in prose.
+
+**Remote/mobile channel caveat (e.g. remote-pi):** the rich interactive ask tool (AskUserQuestion /
+`ask_user_question`) only renders in the local Claude Code / TUI client. Over a remote-pi mobile
+session it does NOT render — the phone shows the tool call as raw JSON and the turn hangs
+"waiting," unanswerable. And you generally CAN'T detect per-message whether a prompt came from
+mobile vs the local terminal: remote-pi injects mobile prompts through the same prompt channel as
+local input, with no readable per-message origin tag (there's only a session-level signal —
+`REMOTE_PI_RELAY` env / a paired device — meaning "remote is possible," not "this message is
+remote"). So the robust rule: **if a remote relay is active at all, default to plain-text numbered
+options** for every operator question (e.g. `1) keep building  2) pause  3) something else`) and let
+them reply by typing the number. Plain-text renders fine in BOTH the terminal and the mobile app, so
+it's the universal-safe format — you only give up the fancy dialog locally (cosmetic). Reserve the
+interactive tool for sessions with no remote relay in play.
 
 ## Driving the sub-orchestrators over cmux
 
@@ -198,7 +192,12 @@ sub-orchestrator you spin up or reset. Headlines:
 - **Visual-QA against the design comp (the "oracle")** — the comp is the single source of
   truth; the app must **look and function** like it; nothing invented, nothing missing.
 - **Per-ticket worktrees** — each builder seat works in its own worktree; no shared-tree
-  collisions.
+  collisions. Standard location is the owning repo's gitignored `.worktrees/` directory:
+  `<repo>/.worktrees/<ticket-slug>`. Do **not** create new sibling `*-wt` directories. Each
+  repo must have `.worktrees/` ignored in its `.gitignore`. Existing scattered worktrees are
+  inventoried and migrated/cleaned safely: delete merged/stale worktrees + local branches when
+  safely merged; defer active/unmerged moves until safe, but track them so they are not
+  forgotten.
 - **Context hygiene** — seats cleared at task end; sub-orchestrator ≤ ~40-50% then you reset it;
   teardown closes panes, **never** the workspace.
 - **Never promote to the release branch / cut a release** — the operator does that manually.

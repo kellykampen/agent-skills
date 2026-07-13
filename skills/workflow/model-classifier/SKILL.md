@@ -3,7 +3,7 @@ name: model-classifier
 description: >-
   Classify any task description into the single best underlying AI model to run it on, scored
   on cost, intelligence, and taste — across a roster of current frontier and budget models
-  (Claude Opus, Sonnet, Haiku, and Fable; GPT/Codex; Gemini Pro and Flash; Kimi; GLM).
+  (Claude Opus, Sonnet, Haiku, and Fable; GPT/Codex including GPT-5.6 Sol/Terra/Luna; Grok; Gemini Pro and Flash; Kimi; GLM).
   Returns a MODEL, not a harness or CLI — which wrapper/tool actually runs that model is the
   caller's decision. Use this BEFORE delegating work to a subagent, launching an Agent/Workflow
   call, or deciding which model should implement, review, or design a piece of work — even if
@@ -13,8 +13,26 @@ description: >-
   and get corrected as real results come in.
 metadata:
   author: kellykampen
-  version: "1.0.2"
+  version: "1.0.3"
 ---
+
+> [!IMPORTANT]
+> ## ⛔ HARD ROSTER LOCK (2026-07-10, active until the CEO lifts it)
+> This OVERRIDES the entire table and decision procedure below — no exceptions — and it
+> **applies to every seat/subagent the conductor or any project lead launches**, not just
+> top-level casts. Only these launch options are permitted:
+>
+> - **`claude-worker`** (Claude Code) launched with **`--dangerously-skip-permissions`** —
+>   Opus 4.8 for hard work, Sonnet 5 for standard/volume. Project leads themselves run Sonnet 5.
+> - **`pi`** on **`openai-codex / gpt-5.5`** or **`openai-codex / gpt-5.6`** — for pi seats and
+>   bulk/mechanical/implementation work.
+>
+> **BANNED right now — never recommend, never launch, kill/switch on sight:** Grok / xAI (out),
+> Kimi (over-limit) and the `claudekimi` wrapper, GLM (exhausted) and the `claudeglm` wrapper,
+> Gemini / `agy` (near-limit), Claude Haiku, Claude Fable.
+> If the rubric below would route a task to any banned model, route it instead to **pi/gpt-5.5
+> (or 5.6)** for non-taste/bulk/review work, or **claude-worker (Sonnet 5 / Opus 4.8)** for
+> taste-sensitive, user-facing, or hardest-reasoning work. When in doubt: claude-worker or pi/gpt-5.5.
 
 # Model Classifier
 
@@ -56,7 +74,11 @@ tempered by which quota it draws from.
 | **Claude Haiku 4.5** | 9 | 2 | 2 |
 | **Gemini 3.5 Flash** ⚠️ | 8 | 6 | 4 |
 | **Gemini 3.1 Pro** ⚠️ | 8 | 8 | 6 |
+| **Grok 4.5** ⚠️ | 8 | 9 | 8 |
 | **GPT-5.5 (Codex)** | 6 | 8 | 5 |
+| **GPT-5.6 Luna** ⚠️ | 6 | 9 | 8 |
+| **GPT-5.6 Sol** ⚠️ | 6 | 9 | 8 |
+| **GPT-5.6 Terra** ⚠️ | 6 | 9 | 9 |
 | **Claude Sonnet 5** | 5 | 5 | 7 |
 | **Claude Opus 4.8** | 4 | 8 | 8 |
 | **Claude Fable 5** | 2 | 9 | 9 |
@@ -70,6 +92,8 @@ the first time a real task proves one wrong in either direction.
 Model-name notes, so recommendations stay unambiguous:
 - **GPT-5.5 (Codex)** = OpenAI's 5.5-generation coding model (the thing the Codex CLI runs).
   Say "GPT-5.5 (Codex)"; the caller picks how to reach it.
+- **Grok 4.5** = xAI's fast, very capable frontier model. In Pi it is reachable via `xai-auth/grok-4.5` or OpenRouter `x-ai/grok-4.5`; prefer the direct xAI route when available. Treat it as a cheap Fable-adjacent model until field data says otherwise.
+- **GPT-5.6 Luna / Sol / Terra** = OpenAI 5.6 family models available in Pi via `openai-codex` and OpenRouter. Treat them as Fable-tier reasoning/design options on OpenAI/Codex/OpenRouter quota. Default interpretation: Luna = broad high-taste generalist, Sol = hard reasoning/coding, Terra = strongest taste/product/design.
 - **Kimi K2.7 Code** is Moonshot's coding flagship; a "highspeed" serving tier of the same
   model exists — that's a harness/serving choice, not a different recommendation.
 - **GLM-5.2** is Z.ai's flagship (1M context — the only non-Claude, non-GPT row with one).
@@ -112,20 +136,13 @@ default there — go through them in order and stop at the first real match.
    **Kimi K2.7 Code** or **GLM-5.2** (cost 9, intelligence 7 comfortably covers specced work —
    pick either; alternating between them is free provider diversity). For the trickiest items
    in a batch, or when the work is subtle enough that intelligence 7 feels marginal, step up to
-   **GPT-5.5 (Codex)** or **Gemini 3.1 Pro** (both intelligence 8, still far cheaper than the
-   Claude high tier): prefer GPT-5.5 (Codex) when the work is hands-on coding — it's
-   coding-tuned and runs on its own quota — and Gemini 3.1 Pro for analysis, long-context
-   reading, or when the OpenAI side is saturated.
+   **GPT-5.5 (Codex)**, **Grok 4.5**, **GPT-5.6 Sol**, or **Gemini 3.1 Pro**: prefer GPT-5.5 (Codex) for standard hands-on coding, Grok 4.5 when you need a fast/cheap frontier pass, GPT-5.6 Sol when intelligence 8 feels marginal, and Gemini 3.1 Pro for analysis, long-context reading, or when the OpenAI/xAI sides are saturated.
 
 3. **User-facing — UI, copy, API/product design** — anything an end user or another engineer
    will read, look at, or call. This is a **hard filter, not just a preference**: taste must be
    **≥ 7**, because a low-taste model will produce something that visibly reads as
    under-designed no matter how "correct" it is. Under the table above that filter currently
-   only clears **Claude Sonnet 5 (7), Claude Opus 4.8 (8), and Claude Fable 5 (9)** — nothing
-   else qualifies yet. Within that shortlist, apply intelligence > taste > cost: simple polish
-   or small UI tasks → Sonnet 5; standard-to-complex design/API work → Opus 4.8; a genuinely
-   novel or high-stakes design (new product surface, pricing page, something that sets a
-   pattern others will copy) → Fable 5.
+   clears **Claude Sonnet 5 (7), Claude Opus 4.8 (8), Claude Fable 5 (9), Grok 4.5 (8), and GPT-5.6 Luna/Sol/Terra (8/8/9)**. Within that shortlist, apply intelligence > taste > cost: simple polish or small UI tasks → Sonnet 5; standard-to-complex design/API work → Grok 4.5, GPT-5.6 Luna/Terra, or Opus 4.8; genuinely novel or high-stakes design (new product surface, pricing page, something that sets a pattern others will copy) → Claude Fable 5 or GPT-5.6 Terra.
 
 4. **Review of a plan or implementation** — judging someone else's design doc or PR, not
    producing new work. → **Claude Opus 4.8** as the default reviewer (intelligence 8 is what a
@@ -139,10 +156,7 @@ default there — go through them in order and stop at the first real match.
 
 5. **Hardest reasoning / high-stakes judgment** — new architecture, security models,
    money-logic design, postmortems, or anything where being wrong is expensive and hard to
-   detect after the fact. → **Claude Fable 5**. This is the one tier where cost genuinely
-   doesn't matter — Fable's low cost score (2) is the price of admission for its intelligence
-   (9), and that trade is worth it exactly here. Use it as an escalation, not a resident: get
-   the specific answer, don't leave it running the rest of the task.
+   detect after the fact. → **Claude Fable 5**, **GPT-5.6 Terra/Sol**, or **Grok 4.5**. Fable remains the conservative gold standard; GPT-5.6 Terra/Sol are Fable-tier OpenAI options; Grok 4.5 is the cheap/fast frontier option. Use these as escalations, not residents: get the specific answer, don't leave them running the rest of the task.
 
 6. **Everything else — standard, routine work** — the bulk of day-to-day implementation,
    merges, everyday coding, most reviews that aren't covered by #4. → **Claude Sonnet 5**, the
@@ -189,9 +203,7 @@ to override it.
 
 ## Keeping this current
 
-The ⚠️-marked rows (GLM-5.2, Kimi K2.7 Code, Gemini 3.1 Pro, Gemini 3.5 Flash) are the ones
-most likely to need correcting — update their cost/intelligence/taste numbers directly in the
-table above the first time a real task shows one of them over- or under-performing its rating.
+The ⚠️-marked rows (GLM-5.2, Kimi K2.7 Code, Gemini 3.1 Pro, Gemini 3.5 Flash, Grok 4.5, GPT-5.6 Luna/Sol/Terra) are the ones most likely to need correcting — update their cost/intelligence/taste numbers directly in the table above the first time a real task shows one of them over- or under-performing its rating.
 The field-tuned rows (GPT-5.5 (Codex), Sonnet 5, Opus 4.8, Fable 5, Haiku 4.5) shouldn't
 drift without a deliberate change. When a provider ships a new generation (e.g.
 Kimi K2.8, GLM-5.3, a real Gemini 3.5 Pro), replace the old row rather than appending — one
