@@ -48,12 +48,22 @@ MSG="$*"
 # A distinctive snippet from the head of the message, for detecting it stuck in the input line.
 SNIPPET="${MSG:0:40}"
 
-# Claude Code's spinner glyphs (✻ ✶ ✢ ✽ and friends) precede every "<verb>ing… (Ns)" busy
-# line while a turn is actively running. Their presence is positive proof the message was
-# submitted and picked up — far more reliable than looking for the message text itself, which
-# either scrolls out of a short capture window or gets collapsed into a "[Pasted text #N]"
-# placeholder that never matches a raw-text snippet.
-SPINNER_RE='[✻✶✢✽✳]'
+# Busy-indicator glyphs/text precede every "<verb>ing… (Ns)" line while a turn is actively
+# running. Their presence is positive proof the message was submitted and picked up — far more
+# reliable than looking for the message text itself, which either scrolls out of a short capture
+# window or gets collapsed into a "[Pasted text #N]" placeholder that never matches a raw-text
+# snippet. Two harness families run on this fleet and use DIFFERENT spinner glyphs:
+#   - Claude Code: ✻ ✶ ✢ ✽ ✳
+#   - pi/codex (every project lead + pi-conductor): the standard "dots" cli-spinner Braille set
+#     ⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏ (field-observed: ⠧⠦⠇⠋⠙⠸⠴ across many captures on codex/gpt-5.5 leads).
+# Missing the second set was a real bug: it made every send to a pi/codex lead fall through to
+# the snippet-match branch below, which retried Enter on an already-submitted message (this is
+# what caused a literal "/reload/reload" duplicate in a lead's input line) and then reported a
+# false FAIL after the retry loop exhausted, even though the message had already landed.
+SPINNER_RE='[✻✶✢✽✳⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]'
+# Text-based busy signals as a second, glyph-independent check — covers any harness whose spinner
+# glyph isn't in SPINNER_RE (a third harness family, a future pi update, etc.).
+BUSY_TEXT_RE='Working(\.\.\.|…)|Compacting context'
 
 if [[ $FLUSH -eq 1 ]]; then
   "$CMUX" send-key --surface "$SURFACE" ctrl+c >/dev/null 2>&1 || true
@@ -83,7 +93,7 @@ for attempt in 1 2 3; do
     echo "OK: queued on $SURFACE (agent busy; will process at end of its turn)"
     exit 0
   fi
-  if printf '%s' "$CAP" | grep -qE "$SPINNER_RE"; then
+  if printf '%s' "$CAP" | grep -qE "$SPINNER_RE" || printf '%s' "$CAP" | grep -qE "$BUSY_TEXT_RE"; then
     echo "OK: sent to $SURFACE (confirmed processing)"
     exit 0
   fi
