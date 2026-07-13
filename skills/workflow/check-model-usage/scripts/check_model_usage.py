@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Check quota/usage + session & weekly pacing across the 5 AI coding
-harnesses (Claude Code, Codex CLI, Antigravity, GLM/Z.ai, Kimi/Moonshot).
+"""Check quota/usage + session & weekly pacing across configured AI coding
+harnesses/providers (Claude Code, Codex CLI/OpenAI, Antigravity, GLM/Z.ai,
+Kimi/Moonshot, and optional CodexBar-visible OpenRouter/xAI pools).
 
 Usage: python3 check_model_usage.py [--only=claude,codex,agy,glm,kimi,...]
-       Aliases: agy=antigravity, glm=zai. Default: all 5 harnesses.
+       Aliases: agy=antigravity, glm=zai, grok=xai. Default: core harnesses.
 
 Single data source: the CodexBar CLI (https://github.com/steipete/CodexBar).
 This script fetches `codexbar usage --provider <x> --json` for each requested
@@ -45,8 +46,11 @@ DISPLAY_NAMES = {
     "gemini": "Gemini CLI",
     "zai": "GLM / Z.ai",
     "kimi": "Kimi / Moonshot",
+    "openrouter": "OpenRouter",
+    "xai": "xAI / Grok",
+    "grok": "xAI / Grok",
 }
-PROVIDER_ORDER = ["claude", "codex", "antigravity", "gemini", "zai", "kimi"]
+PROVIDER_ORDER = ["claude", "codex", "antigravity", "gemini", "zai", "kimi", "openrouter", "xai", "grok"]
 
 # Gemini's three slots carry no labels in JSON; codexbar's own text output
 # labels them Pro / Flash / Flash Lite in slot order.
@@ -562,15 +566,17 @@ def render_summary(summary, lines, now):
 
 
 DEFAULT_PROVIDERS = ["claude", "codex", "antigravity", "zai", "kimi"]
-ALIASES = {"agy": "antigravity", "glm": "zai"}
+# OpenRouter/xAI/Grok are opt-in because CodexBar installations may not expose
+# those provider IDs yet. Use --only=openrouter,xai or --only=grok to probe them.
+ALIASES = {"agy": "antigravity", "glm": "zai", "grok": "xai"}
 
 
 def parse_args(argv):
     providers = DEFAULT_PROVIDERS
     for arg in argv:
         if arg in ("--help", "-h"):
-            print("Usage: check_model_usage.py [--only=claude,codex,agy,glm,kimi,...]")
-            print("Aliases: agy=antigravity, glm=zai. Default: all 5 harnesses.")
+            print("Usage: check_model_usage.py [--only=claude,codex,agy,glm,kimi,openrouter,xai,...]")
+            print("Aliases: agy=antigravity, glm=zai, grok=xai. Default: core harnesses.")
             sys.exit(0)
         if arg.startswith("--only="):
             only = arg[len("--only="):]
