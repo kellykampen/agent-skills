@@ -16,24 +16,6 @@ metadata:
   version: "1.0.3"
 ---
 
-> [!IMPORTANT]
-> ## ⛔ HARD ROSTER LOCK (2026-07-10, active until the CEO lifts it)
-> This OVERRIDES the entire table and decision procedure below — no exceptions — and it
-> **applies to every seat/subagent the conductor or any project lead launches**, not just
-> top-level casts. Only these launch options are permitted:
->
-> - **`claude-worker`** (Claude Code) launched with **`--dangerously-skip-permissions`** —
->   Opus 4.8 for hard work, Sonnet 5 for standard/volume. Project leads themselves run Sonnet 5.
-> - **`pi`** on **`openai-codex / gpt-5.5`** or **`openai-codex / gpt-5.6`** — for pi seats and
->   bulk/mechanical/implementation work.
->
-> **BANNED right now — never recommend, never launch, kill/switch on sight:** Grok / xAI (out),
-> Kimi (over-limit) and the `claudekimi` wrapper, GLM (exhausted) and the `claudeglm` wrapper,
-> Gemini / `agy` (near-limit), Claude Haiku, Claude Fable.
-> If the rubric below would route a task to any banned model, route it instead to **pi/gpt-5.5
-> (or 5.6)** for non-taste/bulk/review work, or **claude-worker (Sonnet 5 / Opus 4.8)** for
-> taste-sensitive, user-facing, or hardest-reasoning work. When in doubt: claude-worker or pi/gpt-5.5.
-
 # Model Classifier
 
 One task description goes in, one model recommendation + a one-line reason comes out. This
