@@ -142,14 +142,14 @@ tags:
 
 Paragraph summarising this section of the video.
 
-![[frame-003.png]]
+![[judas-swing-003.png]]
 *Caption: what this frame shows and why it matters*
 
 ## Next Section
 
 Continue the pattern — text, then frame where the visual adds real context.
 
-![[frame-011.png]]
+![[judas-swing-011.png]]
 *Caption: description*
 
 ## Key Takeaways
@@ -320,7 +320,7 @@ The date belongs in the frontmatter (`published:` field), not the filename. This
 
 **Watch Mode images:** All frames go in the Obsidian `sources/` folder (never in the notes folder):
 ```
-Ideaverse/sources/Social/YouTube/<Channel>/<YYYY-MM-DD-slug>/frame-001.png
+Ideaverse/sources/Social/YouTube/<Channel>/<YYYY-MM-DD-slug>/<video-slug>-001.png
 ```
 This is Obsidian's configured attachment root. The notes folder stays clean with only `.md` files.
 

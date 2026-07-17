@@ -46,7 +46,11 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 
 | Skill | What it does |
 | --- | --- |
+| [check-pr](./skills/engineering/README.md#check-pr) | Check a GitHub/GitLab/Perforce PR, MR, or CL for unresolved comments, failing checks, and an incomplete description — optionally fixing and resolving the actionable ones. |
+| [cli-review](./skills/engineering/README.md#cli-review) | Run a [Greptile](https://greptile.com) CLI review on the current local branch and summarize the findings — before any PR exists. |
 | [coderabbit-request](./skills/engineering/README.md#coderabbit-request) | Request a [CodeRabbit](https://coderabbit.ai) review of your uncommitted changes and return a structured, severity-categorized issue list. |
+| [e2e-remote-setup](./skills/engineering/README.md#e2e-remote-setup) | Run a focus-stealing Electron/GUI E2E suite on a remote headless box (E2B sandbox + Xvfb via crabbox) instead of your machine. |
+| [greploop](./skills/engineering/README.md#greploop) | Iterate on a PR/MR/CL — fix, resolve, push, re-review — until [Greptile](https://greptile.com) scores it 5/5 with zero unresolved comments. |
 | [convex-domain-folder](./skills/engineering/README.md#convex-domain-folder) | Reorganize a [Convex](https://convex.dev) backend into per-domain folders (schema/queries/mutations/model per domain), handling the api-path and test-resolution changes that trip people up. |
 | [add-to-changelog](./skills/engineering/README.md#add-to-changelog) | Add an entry to `CHANGELOG.md` (Keep a Changelog + SemVer). _User-invoked._ |
 | [update-docs](./skills/engineering/README.md#update-docs) | Update README/docs/CLAUDE.md to match changes since the last git commit. _User-invoked._ |

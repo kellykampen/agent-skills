@@ -388,15 +388,21 @@ brew tap manaflow-ai/cmux
 brew install --cask cmux
 ```
 
-## SIP Project — Agent Orchestration
+## Example: SIP Project — Agent Orchestration (replace with your own values)
 
-### Socket path for SIP (NOT /tmp/cmux.sock)
+Everything in this section is one concrete setup, kept as a worked example. The socket path,
+project directory, and surface UUIDs below are machine-specific — substitute your own: find
+your socket at `~/.local/state/cmux/cmux-<uid>.sock` (`id -u` gives your uid) and look up
+surface IDs with `surface.list`.
+
+### Socket path (NOT /tmp/cmux.sock)
 
 ```
-/Users/greg/.local/state/cmux/cmux-501.sock
+/Users/greg/.local/state/cmux/cmux-501.sock   # example — use ~/.local/state/cmux/cmux-<uid>.sock
 ```
 
-The global skill shows `/tmp/cmux.sock` — that is wrong for SIP. Always use the path above.
+The global skill shows `/tmp/cmux.sock` — that is wrong for a per-user cmux install like this
+one. Always use the per-user state path above.
 
 ### Named surfaces (look these up with surface.list if stale)
 

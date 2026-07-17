@@ -3,9 +3,12 @@
 Skills for day-to-day code and backend work.
 
 - [add-to-changelog](#add-to-changelog)
+- [check-pr](#check-pr)
+- [cli-review](#cli-review)
 - [coderabbit-request](#coderabbit-request)
 - [convex-domain-folder](#convex-domain-folder)
 - [e2e-remote-setup](#e2e-remote-setup)
+- [greploop](#greploop)
 - [update-docs](#update-docs)
 
 ---
@@ -47,6 +50,78 @@ Parses `<version> <change_type> <message>`, finds or creates the right `## [vers
 Requires `git` on `PATH`.
 
 Source: [`add-to-changelog/SKILL.md`](./add-to-changelog/SKILL.md)
+
+---
+
+## check-pr
+
+Check a PR/MR/CL for unresolved comments, failing checks, and an incomplete description.
+
+**Install:**
+
+```bash
+npx skills add kellykampen/agent-skills --skill check-pr
+```
+
+Try without installing:
+
+```bash
+npx skills use kellykampen/agent-skills --skill check-pr --agent claude-code
+```
+
+**What it does**
+
+Checks a GitHub pull request, GitLab merge request, or Perforce shelved changelist for unresolved review comments, failing status checks, and an incomplete description — waiting for pending checks to finish, categorizing what it finds as actionable vs informational, and optionally fixing and resolving the actionable items.
+
+**Why it exists**
+
+"Is this PR actually ready?" is a multi-tab, multi-refresh chore: review threads in one place, CI status in another, and a description that drifted from the diff. This collapses it into one pass with a clear ready/not-ready answer.
+
+**How it works**
+
+Detects the platform from the environment (`p4 info`, then the git remote), fetches review threads, check runs, and the description via `gh`/`glab`/`p4`, polls pending checks to completion, then reports — and on request fixes actionable comments and resolves their threads.
+
+**Requirements**
+
+Requires `git` plus the matching authenticated CLI: `gh` (GitHub), `glab` (GitLab), or `p4` (Perforce).
+
+Source: [`check-pr/SKILL.md`](./check-pr/SKILL.md)
+
+---
+
+## cli-review
+
+Run a Greptile review on the current local branch, before any PR exists.
+
+**Install:**
+
+```bash
+npx skills add kellykampen/agent-skills --skill cli-review
+```
+
+Try without installing:
+
+```bash
+npx skills use kellykampen/agent-skills --skill cli-review --agent claude-code
+```
+
+**What it does**
+
+Runs a Greptile CLI review of the current local branch and summarizes the JSON findings — useful for getting Greptile feedback before opening a PR, or from a checkout with no hosted review flow at all.
+
+**Why it exists**
+
+Hosted Greptile reviews only trigger on a pushed PR. When the work is still local — or the repo has no Greptile app installed — there's no way to get the same feedback without shipping first. This closes that gap from the terminal.
+
+**How it works**
+
+Installs or authenticates the `greptile` CLI if needed, runs the review against the branch diff, and turns the raw JSON findings into a readable summary.
+
+**Requirements**
+
+Requires `git`; installs the `greptile` CLI (via `npm`) and walks through authentication when missing.
+
+Source: [`cli-review/SKILL.md`](./cli-review/SKILL.md)
 
 ---
 
@@ -163,6 +238,42 @@ Copies + adapts a Dockerfile (Node + full Electron/Chromium libs + Xvfb + baked 
 Requires the `crabbox` CLI and an E2B account (`e2b` CLI) on `PATH`; the target repo needs a runnable E2E script.
 
 Source: [`e2e-remote-setup/SKILL.md`](./e2e-remote-setup/SKILL.md)
+
+---
+
+## greploop
+
+Iterate on a PR/MR/CL until Greptile gives it 5/5 with zero unresolved comments.
+
+**Install:**
+
+```bash
+npx skills add kellykampen/agent-skills --skill greploop
+```
+
+Try without installing:
+
+```bash
+npx skills use kellykampen/agent-skills --skill greploop --agent claude-code
+```
+
+**What it does**
+
+Loops on a GitHub PR, GitLab MR, or Perforce shelved changelist: triggers a Greptile review, fixes every actionable comment, resolves the threads, pushes (or re-shelves), and re-reviews — repeating until the score is 5/5 with zero unresolved comments, or a max of 5 iterations.
+
+**Why it exists**
+
+Getting a PR through review is a fix → push → wait → re-read cycle that eats attention between rounds. Automating the whole loop means you come back to either a perfect score or a short list of what genuinely needs a human.
+
+**How it works**
+
+Detects the platform, triggers a review (`@greptile review` when one isn't already running), polls the check to completion, parses the confidence score and unresolved comments from the summary and inline threads, applies fixes, resolves addressed threads via the GraphQL/REST APIs, and commits each iteration.
+
+**Requirements**
+
+Requires `git` plus an authenticated `gh` or `glab` (or `p4` for Perforce), and Greptile installed on the repo.
+
+Source: [`greploop/SKILL.md`](./greploop/SKILL.md)
 
 ---
 
