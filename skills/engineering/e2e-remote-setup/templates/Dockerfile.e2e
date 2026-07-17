@@ -1,0 +1,43 @@
+# Remote E2E image — built once into an E2B template (and optionally a Daytona snapshot),
+# then referenced by name from .crabbox.yaml. Installs the FULL Electron/Chromium system-lib
+# set, because a fresh sandbox has none of the libs GitHub's ubuntu-latest ships preinstalled.
+#
+# ADAPT PER PROJECT:
+#   - ELECTRON_VERSION (below) → match electron@ in your lockfile.
+#   - pnpm version in `corepack prepare` → match your package.json "packageManager".
+#   - If your app is NOT Electron, drop the electron-gyp bake + GTK/desktop libs and keep
+#     only what your runtime needs (Xvfb + fonts stay for any GUI/screenshot suite).
+FROM node:22-bookworm
+
+# Electron is a full GUI app (not headless Chromium), so it hard-requires GTK and the
+# X/desktop runtime libs below — `playwright install-deps chromium` does NOT provide
+# libgtk-3.so.0 anymore since Playwright's Chromium runs headless. This explicit set is
+# what GitHub's ubuntu-latest ships preinstalled (which is why CI needs only xvfb).
+# Xvfb + xauth give the in-memory X display so the window "opens" into RAM, never onto a
+# physical screen — the whole point. build-essential + python3 let electron-rebuild
+# recompile native modules (better-sqlite3 / node-pty) for the Electron ABI. Fonts are for
+# screenshot specs to render text consistently.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      xvfb xauth build-essential python3 ca-certificates git zsh \
+      libgtk-3-0 libnotify4 libnss3 libxss1 libxtst6 libatspi2.0-0 \
+      libdrm2 libgbm1 libxcb-dri3-0 libasound2 xdg-utils \
+      fonts-liberation fonts-noto fonts-noto-color-emoji \
+ && rm -rf /var/lib/apt/lists/*
+
+# pnpm via corepack, pinned to the repo's packageManager field.
+RUN corepack enable && corepack prepare pnpm@10.12.3 --activate
+
+# Bake Electron's rebuild headers so electron-rebuild runs OFFLINE at run time (faster, and
+# no dependency on the box reaching electronjs.org). @electron/rebuild reads headers from
+# $HOME/.electron-gyp/<version>; run.sh seeds that from /opt/electron-gyp at run time.
+# KEEP ELECTRON_VERSION in sync with electron@ in your lockfile.
+ARG ELECTRON_VERSION=33.4.11
+RUN npx --yes node-gyp@latest install \
+      --target="$ELECTRON_VERSION" \
+      --dist-url=https://electronjs.org/headers \
+      --devdir=/opt/electron-gyp \
+ && chmod -R a+rX /opt/electron-gyp
+
+# Must match `e2b.workdir` in .crabbox.yaml.
+WORKDIR /home/user/crabbox

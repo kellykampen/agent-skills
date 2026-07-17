@@ -146,8 +146,8 @@ post its verdict where you can collect it:
 ```bash
 cd /path/to/worktree
 agy -p "You are an independent code reviewer (Gemini/Antigravity — a DIFFERENT harness \
-from the Claude author). Review this branch vs origin/develop: run 'git fetch origin' then \
-'git diff origin/develop...HEAD'. Assess correctness, missed edge cases, and any invented \
+from the Claude author). Review this branch vs origin/main: run 'git fetch origin' then \
+'git diff origin/main...HEAD'. Assess correctness, missed edge cases, and any invented \
 scope. Post your review with 'gh pr comment <N> --body ...' starting with the marker \
 <!-- review-gemini -->, then write your VERDICT (SHIP / APPROVE_WITH_NITS / REQUEST_CHANGES) \
 to /tmp/review-DONE.md. Do NOT merge." \
