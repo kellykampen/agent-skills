@@ -1,20 +1,20 @@
 ---
 name: check-model-usage
-description: Checks quota/usage and session + weekly pacing across all 5 AI coding harnesses in one command -- Claude Code, Codex CLI, Antigravity (agy), GLM/Z.ai, and Kimi/Moonshot -- using only the CodexBar CLI (no TUI probes, no direct provider API calls). Use this whenever the user asks "how much quota do I have left", "am I going to run out before the weekly reset", "check my usage/limits across tools", "how's my burn rate", or wants a consolidated view of AI coding-tool usage and whether current usage is sustainable until the next reset. Also use proactively before recommending heavy usage of any of these 5 tools if recent usage hasn't been checked.
+description: Checks quota/usage and session + weekly pacing across AI coding harnesses in one command -- Claude Code, Codex CLI/OpenAI (including GPT-5.6 where CodexBar exposes it), Antigravity (agy), GLM/Z.ai, Kimi/Moonshot, plus any CodexBar-visible OpenRouter/xAI providers -- using only the CodexBar CLI (no TUI probes, no direct provider API calls). Use this whenever the user asks "how much quota do I have left", "am I going to run out before the weekly reset", "check my usage/limits across tools", "how's my burn rate", or wants a consolidated view of AI coding-tool usage and whether current usage is sustainable until the next reset. Also use proactively before recommending heavy usage of these pools if recent usage hasn't been checked.
 context: fork
 model: sonnet
 effort: medium
 compatibility: Requires the CodexBar CLI (`brew install steipete/tap/codexbar`; the script auto-installs it if missing).
 metadata:
   author: kellykampen
-  version: "1.0.0"
+  version: "1.0.1"
   requires: "codexbar"
 ---
 
 # Check Model Usage
 
 Runs `scripts/check_model_usage.py` (a single self-contained Python script, stdlib only), which prints one
-consolidated report covering current usage plus **session (5h) and weekly pacing** across all 5 harnesses.
+consolidated report covering current usage plus **session (5h) and weekly pacing** across the configured harnesses/providers.
 Just run it (takes ~20s; most of that is codexbar's Claude fetch):
 
 ```bash
@@ -22,14 +22,13 @@ python3 scripts/check_model_usage.py
 ```
 
 Use `--only=` to check a subset (comma-separated): `--only=claude,codex`, `--only=glm,kimi`, etc. Accepted
-names: `claude`, `codex`, `agy` (alias for `antigravity`), `glm` (alias for `zai`), `kimi` -- plus any other
-codexbar provider id (e.g. `gemini`) if explicitly requested.
+names: `claude`, `codex`, `agy` (alias for `antigravity`), `glm` (alias for `zai`), `kimi`, `openrouter`, `xai`/`grok` (if CodexBar exposes those provider IDs) -- plus any other codexbar provider id (e.g. `gemini`) if explicitly requested.
 
 ## How it works
 
 The **only** data source is [CodexBar](https://github.com/steipete/CodexBar)
 (`brew install steipete/tap/codexbar`), a community-maintained CLI that reaches each provider's usage data
-itself (OAuth token files, provider web APIs, API tokens) and returns clean JSON. This skill never opens cmux
+itself (OAuth token files, provider web APIs, API tokens) and returns clean JSON. If CodexBar does not yet expose xAI/Grok, OpenRouter, or GPT-5.6 split-out windows, report those pools as not visible to this quota checker rather than probing provider APIs directly. This skill never opens cmux
 panes, never drives any harness TUI, never calls provider APIs directly, and **never writes codexbar config**
 (no `config enable`, no `set-api-key` -- all 5 providers are already configured in codexbar; a piped
 `set-api-key` from an earlier version once corrupted a working stored key). If you're tempted to do any of

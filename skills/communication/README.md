@@ -4,6 +4,7 @@ Skills for managing email and messaging inboxes from the command line.
 
 - [gmail-inbox-zero-triage](#gmail-inbox-zero-triage)
 - [gmail-oib-zero](#gmail-oib-zero)
+- [whatsapp-triage](#whatsapp-triage)
 
 ---
 
@@ -76,6 +77,42 @@ Reads the full label population (not just unread) via `gog`, groups by sender do
 Requires `gog` on `PATH` with Gmail auth configured.
 
 Source: [`gmail-oib-zero/SKILL.md`](./gmail-oib-zero/SKILL.md)
+
+---
+
+## whatsapp-triage
+
+Triage personal WhatsApp unread chats, with a suggested action per chat.
+
+**Install:**
+
+```bash
+npx skills add kellykampen/agent-skills --skill whatsapp-triage
+```
+
+Try without installing:
+
+```bash
+npx skills use kellykampen/agent-skills --skill whatsapp-triage --agent claude-code
+```
+
+**What it does**
+
+Lists unread WhatsApp chats, pulls enough recent messages to understand what each is actually about, and buckets them into Urgent / Reply Soon / Waiting / FYI with a specific suggested action per chat (Reply / Defer / Archive / Mute / Mark read).
+
+**Why it exists**
+
+The same "report first, act only on approval" pattern as the Gmail triage skills, applied to WhatsApp — a daily unread-chat backlog is only worth clearing if the tool never risks sending or archiving something you didn't ask it to.
+
+**How it works**
+
+Wraps the `wacli` CLI in read-only mode to list and inspect chats, then waits for approval before running any write command — using the exact chat JID already surfaced in the report, never a name-based match (which can be ambiguous) unless the user is present to confirm it. Reply text is drafted and confirmed before any send.
+
+**Requirements**
+
+Requires `wacli` on `PATH` with `wacli auth` already completed and a synced local store.
+
+Source: [`whatsapp-triage/SKILL.md`](./whatsapp-triage/SKILL.md)
 
 ---
 

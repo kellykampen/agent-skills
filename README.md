@@ -57,6 +57,7 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 | --- | --- |
 | [gmail-inbox-zero-triage](./skills/communication/README.md#gmail-inbox-zero-triage) | Daily Gmail triage toward inbox zero — buckets unread mail into Urgent/Reply Soon/Waiting/FYI with a specific suggested action per email, and never executes anything without explicit approval. |
 | [gmail-oib-zero](./skills/communication/README.md#gmail-oib-zero) | Bulk-clear a secondary filtered Gmail label to zero, grouped by sender/domain instead of itemized one by one. |
+| [whatsapp-triage](./skills/communication/README.md#whatsapp-triage) | Triage personal WhatsApp unread chats via `wacli` — buckets into Urgent/Reply Soon/Waiting/FYI with a suggested action per chat, never sends or archives without explicit approval. |
 
 ### [`workflow/`](./skills/workflow/README.md) — the AI workflow itself
 
