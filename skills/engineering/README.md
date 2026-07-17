@@ -5,6 +5,7 @@ Skills for day-to-day code and backend work.
 - [add-to-changelog](#add-to-changelog)
 - [coderabbit-request](#coderabbit-request)
 - [convex-domain-folder](#convex-domain-folder)
+- [e2e-remote-setup](#e2e-remote-setup)
 - [update-docs](#update-docs)
 
 ---
@@ -126,6 +127,42 @@ Splits table definitions out of the monolithic schema, repoints every relative i
 Requires `convex` on `PATH`.
 
 Source: [`convex-domain-folder/SKILL.md`](./convex-domain-folder/SKILL.md)
+
+---
+
+## e2e-remote-setup
+
+Run a focus-stealing Electron/GUI E2E suite on a remote headless box instead of your machine.
+
+**Install:**
+
+```bash
+npx skills add kellykampen/agent-skills --skill e2e-remote-setup
+```
+
+Try without installing:
+
+```bash
+npx skills use kellykampen/agent-skills --skill e2e-remote-setup --agent claude-code
+```
+
+**What it does**
+
+Wires up `pnpm test:e2e:remote`: crabbox leases an E2B sandbox, rsyncs the working tree, installs deps, and runs the E2E suite under Xvfb (an in-RAM X display) — so a full Electron app "opens" on the remote box and never grabs your local mouse/keyboard. Bundles the three files to adapt into a target repo (`.crabbox.yaml`, `crabbox/Dockerfile.e2e`, `crabbox/run.sh`) plus the one-time E2B template build.
+
+**Why it exists**
+
+Electron E2E (`_electron.launch`) opens a real OS window with no local headless display, so running it locally steals focus for the whole run — and local CI often can't run a GUI suite at all. Offloading to an on-demand remote box makes the suite runnable without hijacking the dev machine.
+
+**How it works**
+
+Copies + adapts a Dockerfile (Node + full Electron/Chromium libs + Xvfb + baked Electron rebuild headers), a `.crabbox.yaml` (E2B provider, sync excludes, an `e2e` job mirroring the repo's CI E2E step), and a credential-loading `run.sh` wrapper; then `e2b template create` builds the image once. Includes the hard-won gotchas: read per-spec results not the suite exit code, the Daytona 60s-exec-cap trap, native-module dual-ABI rebuilds, and keeping `ELECTRON_VERSION` in lockstep with the lockfile.
+
+**Requirements**
+
+Requires the `crabbox` CLI and an E2B account (`e2b` CLI) on `PATH`; the target repo needs a runnable E2E script.
+
+Source: [`e2e-remote-setup/SKILL.md`](./e2e-remote-setup/SKILL.md)
 
 ---
 
