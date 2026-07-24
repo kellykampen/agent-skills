@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Issue Breakdown
@@ -31,6 +31,8 @@ The epic is the container and the narrative. Give it four things so anyone landi
 - **Why** — the user/business outcome it drives.
 - **How** — the approach and the key decisions already locked.
 - **Key features / scope** — a short bullet list of what's in, and an explicit **non-goals** line for what's out.
+
+- **Project-level dependencies** — which *other existing projects* in the team must this epic build on? Check the team's project list and link the ones it depends on. Nearly every project depends on ≥1 other; only a genuinely foundational epic is a legitimate solo. These are **project↔project** relations, distinct from the issue links in Step 2.5 — see the tool note in Step 4.
 
 If the "why/how" isn't clear yet, that's a signal to interview the user before decomposing — you can't write good stories against a fuzzy goal. (The `interview` skill is the tool for that; this skill assumes the goal is understood and focuses on the breakdown.)
 
@@ -123,7 +125,7 @@ And for the epic:
 
 The standard above is tool-agnostic — it holds whether you create issues via `linear-cli`, the Linear MCP, or hand the drafts to someone. The concrete "how the fleet runs it" (linear-cli invocations for creating the project, creating issues, setting estimates, adding relations, attaching design PNGs, and applying labels) lives in **[references/linear-cli.md](references/linear-cli.md)** — read it when you're actually creating issues in Linear via the CLI. If you're using the Linear MCP or another client, map the same fields; the bar doesn't change.
 
-Whatever the tool: create the **epic first**, then the issues (parented as you go), then add the **dependency relations** in a second pass once all issue IDs exist.
+Whatever the tool: create the **epic first**, then the issues (parented as you go), then add the **issue dependency relations** in a second pass once all issue IDs exist — and finally wire the **project-level dependencies** (this epic → the other projects it depends on). Project↔project relations are a different mechanism from issue relations: the Linear MCP and `linear-cli rel` don't create them; use `projectRelationCreate` via `linear-cli api mutate`, and get the anchor orientation right (finish-to-start — prerequisite `end` → dependent `start`). Details in [references/linear-cli.md](references/linear-cli.md).
 
 ## Completion criteria
 
@@ -137,7 +139,7 @@ The breakdown is done when **every** issue satisfies all of:
 - [ ] Has ≥1 label
 - [ ] If a design/UI issue: has a design screenshot/PNG attached (+ optional source link)
 
-…and the epic itself has what/why/how/key-features/non-goals. If any box is unchecked, the breakdown isn't finished — fix it before calling it done.
+…and the epic itself has what/why/how/key-features/non-goals **and its project-level dependencies wired** (linked to the other projects it depends on, or explicitly a foundational solo). If any box is unchecked, the breakdown isn't finished — fix it before calling it done.
 
 ## Gotchas
 
@@ -146,3 +148,4 @@ The breakdown is done when **every** issue satisfies all of:
 - **Design tickets fail silently without the image.** The implementer will guess copy/spacing and it'll bounce at review. Attach the PNG even when a prototype link exists — links rot and require auth; the attached image always renders on the ticket.
 - **Wire dependencies in a second pass.** You usually can't link A→B until both exist, so create all issues first, then add relations. Skipping this leaves a backlog that looks parallelizable but isn't.
 - **Don't over-split into meaningless fragments.** ≤3 and "prefer 1–2" is about review-ability, not turning one story into ten half-point slivers. Each issue should still be an independently valuable, demoable slice with its own AC.
+- **Project dependencies ≠ issue dependencies, and they're easy to skip.** Issue `blocks` links (Step 2.5) live *inside* the epic; project↔project links tie this epic to *other* epics. Both matter. The project one is the one people forget — and because the Linear MCP / `linear-cli rel` can't create it, it gets silently dropped. Wire it with `projectRelationCreate` (see the reference), and mind the anchor orientation: the reverse order still "succeeds" but never shows up in the Dependencies column — a silent no-op.

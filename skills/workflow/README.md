@@ -109,7 +109,7 @@ npx skills use kellykampen/agent-skills --skill issue-breakdown --agent claude-c
 
 **What it does**
 
-Turns a feature, epic, or rough initiative into **one Linear project (the epic) and a set of small issues** where every issue is a user story ("as a role, I want an action, so a result") with explicit acceptance criteria, a Fibonacci estimate of **3 points or less** (anything larger gets split), a parent epic, blocker/dependency links, and labels. Design issues additionally carry a **screenshot/PNG export** of the target design plus an optional prototype/Figma/Claude Design link.
+Turns a feature, epic, or rough initiative into **one Linear project (the epic) and a set of small issues** where every issue is a user story ("as a role, I want an action, so a result") with explicit acceptance criteria, a Fibonacci estimate of **3 points or less** (anything larger gets split), a parent epic, blocker/dependency links, and labels. The epic itself is also linked to the **other projects it depends on** (project↔project dependencies). Design issues additionally carry a **screenshot/PNG export** of the target design plus an optional prototype/Figma/Claude Design link.
 
 **Why it exists**
 

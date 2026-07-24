@@ -5,7 +5,7 @@ argument-hint: [plan-file | feature description]
 disable-model-invocation: true
 metadata:
   author: kellykampen
-  version: "1.0.1"
+  version: "1.1.0"
 ---
 
 # Interview
@@ -33,6 +33,7 @@ When the user wants issues created, after the interview use the **`linear-*` ski
 - A **Linear project** capturing the what / why / how / key features.
 - **Issues** under the repo's team (usually named similarly to the repo), each **≤ 3 points** of effort — break anything larger down.
 - **Links** between issues for blockers / dependencies.
+- **Project-level dependency links** — before finishing, check the team's *other* projects and link the ones this new project depends on. Every new project should get **≥1 project dependency** unless it's genuinely foundational (rare). These are project↔project relations (not issue relations): the Linear MCP and `linear-cli rel` don't create them — use `projectRelationCreate` via `linear-cli api mutate`, `type: "dependency"`, with the **prerequisite anchored `end`** and the **dependent anchored `start`** (`{ projectId: <prereq>, anchorType: "end", relatedProjectId: <new project>, relatedAnchorType: "start" }`). The reverse anchor order won't render in the Dependencies column.
 
 ## Finish
 
