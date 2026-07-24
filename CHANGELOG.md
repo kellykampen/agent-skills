@@ -10,6 +10,10 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+### Changed
+
+- **`issue-breakdown`** → 1.3.0 and **`interview`** → 1.1.0 (`workflow/`): both now require wiring **project-level (project↔project) dependencies** when creating a Linear epic, not just issue-level `blocks` links. Added the exact mechanic to `issue-breakdown/references/linear-cli.md`: project relations are created via raw GraphQL `projectRelationCreate` (`linear-cli api mutate`) — the Linear MCP and `linear-cli rel` don't do them — with the load-bearing **finish-to-start** anchor orientation (prerequisite `end` → dependent `start`); the reverse order silently fails to render in the Dependencies column. The `/interview-linear` command carries the same instruction.
+
 ## [0.7.0] - 2026-07-07
 
 ### Added
