@@ -10,6 +10,14 @@ tracks the collection as a whole.
 
 ## [Unreleased]
 
+### Added
+
+- **Skill frontmatter validator** (`scripts/validate_skills.py`, stdlib-only Python 3) — checks every `skills/**/SKILL.md` for present/terminated frontmatter, `name` ≤ 64 chars, and `description` ≤ 1024 chars (measured after YAML `>-` folding, i.e. exactly what Claude Code's skills provider sees). Wired into CI via `.github/workflows/validate-skills.yml`, running on every PR and push to `main`.
+
+### Fixed
+
+- **`convex-domain-folder`** → 1.2.1 (`engineering/`): its frontmatter `description` was 1286 chars — over the 1024-char limit enforced by Claude Code / the skills provider, which can make the skill fail to load. Tightened to 1000 chars, preserving all trigger phrases and use/skip signals; the operational detail dropped from the description (http.ts `registerDomainRoutes` composition mechanics) was already covered in the skill body.
+
 ### Changed
 
 - **`issue-breakdown`** → 1.3.0 and **`interview`** → 1.1.0 (`workflow/`): both now require wiring **project-level (project↔project) dependencies** when creating a Linear epic, not just issue-level `blocks` links. Added the exact mechanic to `issue-breakdown/references/linear-cli.md`: project relations are created via raw GraphQL `projectRelationCreate` (`linear-cli api mutate`) — the Linear MCP and `linear-cli rel` don't do them — with the load-bearing **finish-to-start** anchor orientation (prerequisite `end` → dependent `start`); the reverse order silently fails to render in the Dependencies column. The `/interview-linear` command carries the same instruction.
