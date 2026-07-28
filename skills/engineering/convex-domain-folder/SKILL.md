@@ -1,28 +1,25 @@
 ---
 name: convex-domain-folder
 description: >-
-  Reorganize a Convex backend into per-domain folders — the pattern where each
-  domain owns convex/DOMAIN/schema.ts (exporting DOMAINTables, spread into
-  the root schema) plus optional queries.ts / mutations.ts / model.ts, further
-  split into internal/private/public trust-tier subfolders once a domain has
-  more than one trust boundary, and an optional convex/DOMAIN/http.ts exporting
-  a registerDomainRoutes(app) composed into the root http.ts the same way
-  domain schemas compose into root schema.ts. Use this whenever moving a flat
-  convex/NAME.ts into a convex/NAME/ subdirectory, splitting a growing Convex
-  function file by trust tier (internal vs private vs public), extracting table
-  definitions out of a monolithic schema.ts, moving HTTP routes into a domain
-  folder, or when the user says things like "move X into a subdir like we did
-  for tasks/users", "break this Convex file up", "follow the same structure",
-  "split into internal/private/public", or "modularize the schema/http routes".
-  Covers the Convex function-path changes (api.DOMAIN.TIER.queries.*),
-  relative-import repointing, and the convex-test glob re-rooting that
-  co-located tests need. Reach for it even when the request sounds like a
-  trivial file move — the api-path and test-resolution consequences are easy
-  to get wrong.
+  Reorganize a Convex backend into per-domain folders — each domain owns
+  convex/DOMAIN/schema.ts (exporting DOMAINTables, spread into the root
+  schema) plus optional queries.ts / mutations.ts / model.ts,
+  internal/private/public trust-tier subfolders, and an optional
+  convex/DOMAIN/http.ts composed into the root http.ts. Use when moving a
+  flat convex/NAME.ts into a convex/NAME/ subdirectory, splitting a Convex
+  function file by trust tier (internal vs private vs public), extracting
+  tables out of a monolithic schema.ts, moving HTTP routes into a domain
+  folder, or when the user says "move X into a subdir like we did for
+  tasks/users", "break this Convex file up", "follow the same structure",
+  "split into internal/private/public", or "modularize the schema/http
+  routes". Covers the api-path changes (api.DOMAIN.TIER.queries.*),
+  relative-import repointing, and convex-test glob re-rooting. Use it even
+  for a seemingly trivial file move — api-path and test-resolution
+  consequences are easy to get wrong.
 compatibility: Requires a Convex project with the `convex` CLI available (for codegen).
 metadata:
   author: kellykampen
-  version: "1.2.0"
+  version: "1.2.1"
   requires: "convex"
 ---
 
