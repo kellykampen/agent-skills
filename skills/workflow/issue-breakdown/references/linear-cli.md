@@ -66,7 +66,7 @@ mutation {
 }
 ```
 
-The rank above is illustrative; read current ranks before calculating a new one. Preserve `priority` and avoid changing unrelated issues. Requery after each batch and verify the requested top-to-bottom sequence. If the user requested a single forward chain, also verify that adjacent tickets have the matching `blocks` links, with one entrance and one exit. If the available client cannot write rank, say the visible order remains unset instead of treating dependency links as sufficient.
+The rank above is illustrative; read current ranks before calculating a new one. Preserve `priority` and avoid changing unrelated issues. Requery after each batch and verify the requested top-to-bottom sequence. If the user requested a single forward chain, verify that the requested tickets have only the matching adjacent `blocks` links, with one entrance and one exit; report any extra internal links. If the available client cannot write rank, say the visible order remains unset instead of treating dependency links as sufficient.
 
 ## Project dependencies (project ↔ project)
 

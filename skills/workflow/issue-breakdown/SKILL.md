@@ -73,7 +73,7 @@ Every issue belongs to the epic/project from Step 1. No orphan issues — a loos
 
 Wire the real relationships: if issue A must land before B, record **A blocks B** (equivalently, B is blocked by A). This makes the build order explicit, lets work parallelize safely, and stops someone picking up a ticket whose groundwork doesn't exist yet. Link every dependency you know — a dependency graph you can see beats one that lives in someone's head.
 
-When the user specifies a top-to-bottom execution order, also arrange the project's visible issue list in that order. `blocks` links do not move rows. Do not change issue urgency (`priority`) to position tickets; the view's ordering field is separate. See [references/linear-cli.md](references/linear-cli.md) for reading and setting the rank when using Linear CLI. If the user requests one forward chain, verify that it has exactly one entrance and one exit.
+When the user specifies a top-to-bottom execution order, also arrange the project's visible issue list in that order. `blocks` links do not move rows. Do not change issue urgency (`priority`) to position tickets; the view's ordering field is separate. See [references/linear-cli.md](references/linear-cli.md) for reading and setting the rank when using Linear CLI. If the user requests one forward chain, verify that only adjacent requested tickets are linked, with exactly one entrance and one exit.
 
 ### 2.6 Labels
 
