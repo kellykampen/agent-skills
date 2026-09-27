@@ -50,10 +50,12 @@ Linear stores issue urgency in `priority` (0 = none). A project view ordered by 
 The ordinary `linear-cli i list` output defaults to identifier order, and `i update` has no rank flag. The Linear MCP issue list/save tools do not expose these rank fields. Use raw GraphQL through `linear-cli api` when the user has asked for the project list itself to follow an execution sequence:
 
 ```bash
-linear-cli api query '{ project(id:"PROJECT_ID") { issues(first:100) { nodes { id identifier priority sortOrder prioritySortOrder } } } }' --output json
+linear-cli api query '{ project(id:"PROJECT_ID") { issues(first:100) { nodes { id identifier priority sortOrder prioritySortOrder } pageInfo { hasNextPage endCursor } } } }' --output json
 ```
 
-Sort the returned issues by the field that matches the view (ascending `prioritySortOrder` in a Priority-ordered view), rather than trusting the API's node order. `IssueUpdateInput` accepts both `prioritySortOrder` and `sortOrder`. For a Priority-ordered view, update a specific issue with raw `issueUpdate` after choosing a rank from its current neighbors:
+If `hasNextPage` is true, repeat the query with `issues(first:100, after:"END_CURSOR")` until every page has been collected. Do not rank or verify only the first page. Do not trust the API's node order as the view order.
+
+For a Priority-ordered view, compare `priority` levels first (1 Urgent, 2 High, 3 Medium, 4 Low, then 0 None), then sort within each level by ascending `prioritySortOrder`. Rank cannot move an issue across priority levels. If the requested sequence crosses those levels, explain that this view cannot show it without changing urgency or view ordering; do not silently change urgency. `IssueUpdateInput` accepts both `prioritySortOrder` and `sortOrder`. For a Priority-ordered view, update a specific issue with raw `issueUpdate` after choosing a rank from its current neighbors in the same priority level:
 
 ```graphql
 mutation {
