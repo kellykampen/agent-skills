@@ -73,6 +73,8 @@ Every issue belongs to the epic/project from Step 1. No orphan issues — a loos
 
 Wire the real relationships: if issue A must land before B, record **A blocks B** (equivalently, B is blocked by A). This makes the build order explicit, lets work parallelize safely, and stops someone picking up a ticket whose groundwork doesn't exist yet. Link every dependency you know — a dependency graph you can see beats one that lives in someone's head.
 
+When the user specifies a top-to-bottom execution order, also arrange the project's visible issue list in that order. `blocks` links do not move rows. Do not change issue urgency (`priority`) to position tickets; the view's ordering field is separate. See [references/linear-cli.md](references/linear-cli.md) for reading and setting the rank when using Linear CLI. If the user requests one forward chain, verify that only adjacent requested tickets are linked, with exactly one entrance and one exit.
+
 ### 2.6 Labels
 
 Label each issue enough to filter and route it — area/domain, type (feature/bug/chore/spike), and any workflow labels your team uses. Unlabeled issues get lost. At minimum every issue should be findable by its domain.
@@ -125,7 +127,7 @@ And for the epic:
 
 The standard above is tool-agnostic — it holds whether you create issues via `linear-cli`, the Linear MCP, or hand the drafts to someone. The concrete "how the fleet runs it" (linear-cli invocations for creating the project, creating issues, setting estimates, adding relations, attaching design PNGs, and applying labels) lives in **[references/linear-cli.md](references/linear-cli.md)** — read it when you're actually creating issues in Linear via the CLI. If you're using the Linear MCP or another client, map the same fields; the bar doesn't change.
 
-Whatever the tool: create the **epic first**, then the issues (parented as you go), then add the **issue dependency relations** in a second pass once all issue IDs exist — and finally wire the **project-level dependencies** (this epic → the other projects it depends on). Project↔project relations are a different mechanism from issue relations: the Linear MCP and `linear-cli rel` don't create them; use `projectRelationCreate` via `linear-cli api mutate`, and get the anchor orientation right (finish-to-start — prerequisite `end` → dependent `start`). Details in [references/linear-cli.md](references/linear-cli.md).
+Whatever the tool: create the **epic first**, then the issues (parented as you go), then add the **issue dependency relations** in a second pass once all issue IDs exist — and finally wire the **project-level dependencies** (this epic → the other projects it depends on). If the user requested a visible execution order, set and verify that order after the issues exist. Project↔project relations are a different mechanism from issue relations: the Linear MCP and `linear-cli rel` don't create them; use `projectRelationCreate` via `linear-cli api mutate`, and get the anchor orientation right (finish-to-start — prerequisite `end` → dependent `start`). Details in [references/linear-cli.md](references/linear-cli.md).
 
 ## Completion criteria
 
@@ -136,6 +138,7 @@ The breakdown is done when **every** issue satisfies all of:
 - [ ] Estimated in Fibonacci and **≤3 points** (prefer 1–2)
 - [ ] Parented to the epic/project
 - [ ] Has dependency links wired (or explicitly "none")
+- [ ] If an execution order was requested, the project's visible issue order matches it
 - [ ] Has ≥1 label
 - [ ] If a design/UI issue: has a design screenshot/PNG attached (+ optional source link)
 

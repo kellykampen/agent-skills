@@ -11,7 +11,8 @@ Read this when you're actually creating the epic + issues via `linear-cli`. It m
 3. **Second pass: add issue dependency relations** — you can only link `A blocks B` once both issue IDs exist.
 4. **Attach design PNGs** to any design/UI issues.
 5. **Wire project-level dependencies** — link this epic to the *other projects* it depends on (see "Project dependencies" below). Skipping this is the most common miss.
-6. **Verify** every issue against the completion checklist (see main skill) before calling it done.
+6. **If the user specified a visible order, set and verify it** in the project's issue view (see "Visible issue order" below). Dependency links alone do not do this.
+7. **Verify** every issue against the completion checklist (see main skill) before calling it done.
 
 ## Rule → command
 
@@ -23,6 +24,7 @@ Read this when you're actually creating the epic + issues via `linear-cli`. It m
 | Fibonacci estimate | Set the estimate field to 1/2/3. If your tempted value is 5+, don't store it — split the issue and estimate the pieces. |
 | Labels | Apply ≥1 label per issue (domain + type). If a needed label doesn't exist, create it, don't skip. |
 | Issue dependencies | `linear-cli rel add <A> -r blocks <B>` — A blocks B. Do these after all issues exist. |
+| Visible issue order | Read the view's rank field through raw GraphQL; update that field if the user specified an order. `priority` is urgency, not rank. |
 | Project dependencies | Link the epic to other projects it depends on via `projectRelationCreate` (raw GraphQL — see below). **Not** `linear-cli rel`; that's issues only. |
 | Design PNG | Attach the exported screenshot to the design/UI issue (attachment/upload), plus an optional prototype/Figma/Claude Design URL in the body. |
 
@@ -40,6 +42,31 @@ linear-cli rel add <A-ID> -r blocks <B-ID>         # A blocks B
 ```
 
 For creating projects/issues, setting estimates, applying labels, and uploading attachments, defer to the installed `linear-create` / `linear-projects` / `linear-labels` / `linear-attachments` skills (or `linear-cli <sub> --help`) rather than guessing flags — getting the team/project/estimate fields right the first time is worth the lookup.
+
+## Visible issue order
+
+Linear stores issue urgency in `priority` (0 = none). A project view ordered by **Priority** uses `prioritySortOrder` for the relative order within a priority level; its value is distinct from `sortOrder`. A manually ordered view may use `sortOrder`. Check the view's display option and compare live ranks with the order shown in the UI before writing either field. Ranking affects the issue's position across the workspace, not just this project. [Linear's priority ordering](https://linear.app/docs/priority) and [display options](https://linear.app/docs/display-options) describe the view behavior.
+
+The ordinary `linear-cli i list` output defaults to identifier order, and `i update` has no rank flag. The Linear MCP issue list/save tools do not expose these rank fields. Use raw GraphQL through `linear-cli api` when the user has asked for the project list itself to follow an execution sequence:
+
+```bash
+linear-cli api query '{ project(id:"PROJECT_ID") { issues(first:100) { nodes { id identifier priority sortOrder prioritySortOrder } pageInfo { hasNextPage endCursor } } } }' --output json
+```
+
+If `hasNextPage` is true, repeat the query with `issues(first:100, after:"END_CURSOR")` until every page has been collected. Do not rank or verify only the first page. Do not trust the API's node order as the view order.
+
+For a Priority-ordered view, compare `priority` levels first (1 Urgent, 2 High, 3 Medium, 4 Low, then 0 None), then sort within each level by ascending `prioritySortOrder`. Rank cannot move an issue across priority levels. If the requested sequence crosses those levels, explain that this view cannot show it without changing urgency or view ordering; do not silently change urgency. `IssueUpdateInput` accepts both `prioritySortOrder` and `sortOrder`. For a Priority-ordered view, update a specific issue with raw `issueUpdate` after choosing a rank from its current neighbors in the same priority level:
+
+```graphql
+mutation {
+  issueUpdate(id: "ISSUE_UUID", input: { prioritySortOrder: -123456.5 }) {
+    success
+    issue { identifier priority prioritySortOrder }
+  }
+}
+```
+
+The rank above is illustrative; read current ranks before calculating a new one. Preserve `priority` and avoid changing unrelated issues. Requery after each batch and verify the requested top-to-bottom sequence. If the user requested a single forward chain, verify that the requested tickets have only the matching adjacent `blocks` links, with one entrance and one exit; report any extra internal links. If the available client cannot write rank, say the visible order remains unset instead of treating dependency links as sufficient.
 
 ## Project dependencies (project ↔ project)
 
