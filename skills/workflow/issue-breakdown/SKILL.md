@@ -129,6 +129,12 @@ The standard above is tool-agnostic — it holds whether you create issues via `
 
 Whatever the tool: create the **epic first**, then the issues (parented as you go), then add the **issue dependency relations** in a second pass once all issue IDs exist — and finally wire the **project-level dependencies** (this epic → the other projects it depends on). If the user requested a visible execution order, set and verify that order after the issues exist. Project↔project relations are a different mechanism from issue relations: the Linear MCP and `linear-cli rel` don't create them; use `projectRelationCreate` via `linear-cli api mutate`, and get the anchor orientation right (finish-to-start — prerequisite `end` → dependent `start`). Details in [references/linear-cli.md](references/linear-cli.md).
 
+**Description body is content, not a path (FLT-61).** When using `linear-cli`, `-d` / `--description`
+takes the markdown text itself. Stage drafts under `/tmp` if useful, then always pass contents:
+`-d "$(cat /tmp/body.md)"` or (on create) `-d - < /tmp/body.md`. Never `-d /tmp/body.md` — that
+stores the path string as the ticket body. The body must include the user story and `- [ ]` AC
+checkboxes. See [references/linear-cli.md](references/linear-cli.md) for the full pattern.
+
 ## Completion criteria
 
 The breakdown is done when **every** issue satisfies all of:

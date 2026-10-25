@@ -19,3 +19,6 @@ npm-debug.log*
 # Python
 __pycache__/
 *.pyc
+
+# Local linked worktrees
+/.worktrees/
