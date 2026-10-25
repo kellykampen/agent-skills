@@ -17,7 +17,7 @@ Read this when you're actually creating the epic + issues via `linear-cli`. It m
 ## Rule → command
 
 | Rule | How |
-|---|---|
+| --- | --- |
 | Epic (project) | Create a project in the target team; capture its ID/slug. Put the what/why/how/key-features/non-goals in the project description. |
 | Issue in the epic | Create the issue **with the project set** — never create then forget to parent. Confirm the team is correct. |
 | User story + AC | Goes in the issue **description** (markdown). Use the template from the main skill so AC is always present. |
@@ -68,6 +68,45 @@ mutation {
 
 The rank above is illustrative; read current ranks before calculating a new one. Preserve `priority` and avoid changing unrelated issues. Requery after each batch and verify the requested top-to-bottom sequence. If the user requested a single forward chain, verify that the requested tickets have only the matching adjacent `blocks` links, with one entrance and one exit; report any extra internal links. If the available client cannot write rank, say the visible order remains unset instead of treating dependency links as sufficient.
 
+## Issue / project description body (HARD RULE — FLT-61)
+
+`-d` / `--description` takes the **markdown text itself**, never a filesystem path.
+Writing a body to `/tmp/foo.md` is fine as a **staging step**; the Linear call must still
+send the **file contents**. A ticket whose description is literally `/tmp/foo.md` is broken.
+
+Correct patterns (create or update):
+
+```bash
+# Preferred: expand file contents into the flag value
+linear-cli issues create "Title" -t <TEAM> --project <PROJECT> \
+  -d "$(cat /tmp/issue-body.md)" \
+  -e 2 -l area -l feature
+
+linear-cli issues update <ISSUE-ID> --description "$(cat /tmp/issue-body.md)"
+
+# create also accepts stdin via "-" (confirmed by linear-cli help)
+linear-cli issues create "Title" -t <TEAM> -d - < /tmp/issue-body.md
+
+# projects: same rule for project description
+linear-cli projects create "Epic name" -t <TEAM> -d "$(cat /tmp/epic-body.md)"
+```
+
+Wrong — do **not** do this:
+
+```bash
+# BAD: stores the path string as the description
+linear-cli issues create "Title" -t <TEAM> -d /tmp/issue-body.md
+linear-cli issues update <ISSUE-ID> -d /tmp/issue-body.md
+linear-cli issues update <ISSUE-ID> --description /tmp/issue-body.md
+```
+
+Same rule for comments: `--body` is markdown text (`-b "$(cat file)"` or inline markdown),
+never a bare path.
+
+The body markdown **must include** the user story and the Acceptance Criteria section as
+`- [ ]` checkboxes (see the main skill template). Staging files are disposable; the ticket
+is not done until Linear holds the full content.
+
 ## Project dependencies (project ↔ project)
 
 Project-level dependencies are a **separate mechanism** from issue relations, and there's no convenience wrapper: the **Linear MCP exposes no project-relation tool** and `linear-cli rel` only does *issue* relations. Create them with raw GraphQL via `linear-cli api mutate` (`projectRelationCreate`). Every new epic should get **≥1** of these unless it's genuinely foundational.
@@ -93,6 +132,7 @@ linear-cli api mutate -v p=<PREREQUISITE_ID> -v r=<DEPENDENT_ID> '
 
 ## Gotchas specific to the CLI
 
+- **Description is content, not a path (FLT-61).** `-d /tmp/foo.md` writes the *string* `/tmp/foo.md` into Linear. Always `-d "$(cat /tmp/foo.md)"` or (on create) `-d - < /tmp/foo.md`. Verify after write that the issue body is real markdown, not a path.
 - **Convex/Linear team vs project:** the *team* (e.g. `FTD`, `DOJO`) is the top namespace; the *project* is the epic inside it. Create issues against the right **team** AND set the **project** — an issue can be in a team but orphaned from any project, which violates the parent rule.
 - **Estimate scales cap silently.** Some Fibonacci presets store 13 as 8 (or similar). That's a display artifact — it does not license a >3-point issue. Split anyway.
 - **Attachments must actually upload**, not just be linked in text. A design issue needs the image on the ticket; verify it rendered.
