@@ -104,6 +104,7 @@ Every issue uses the same standards. The user story (2.1) stays as the first lin
 - **AC: Gherkin.** One Given/When/Then scenario per AC, still as a `- [ ]` checkbox, with ≥1 AC per REQ. Every Then is testable.
 - **Traceability: REQ → AC → TEST.** Each issue has a table that maps each REQ to its AC and test. Nothing gets built without a check. See [references/traceability.md](references/traceability.md).
 - **Diagrams: Mermaid.** Use a Mermaid flowchart for issue dependencies in the epic, and a REQ → AC → TEST graph for complex issues. Same file.
+- **Structure.** One Linear project = one feature. Its issues are the work for that feature. Every issue has dependency links (blocks / blocked by, or "none") and states an **Entry** condition (what must be true to start, e.g. "ENG-101 is Done") and an **Exit** condition (what proves it is done: all AC checked and verified, tests pass). The Mermaid dependency flowchart shows entry and exit for each issue.
 - **Risky change:** put a **WARNING:** first. Write the command, then the risk.
 
 ## Output format
@@ -133,6 +134,7 @@ As a <role>, I want to <action>, so <result>.
 
 **Estimate:** 1|2|3   **Labels:** area, type   **Epic:** project
 **Depends on / blocks:** issue refs, or "none"
+**Entry:** what must be true to start   **Exit:** all AC checked + verified, tests in the traceability table pass
 ```
 
 And for the epic:
@@ -172,6 +174,7 @@ The breakdown is done when **every** issue satisfies all of:
 - [ ] Has numbered EARS requirements (`REQ-001`…, one per ID) that pass the 29148 checks
 - [ ] Has ≥1 Gherkin AC checkbox per REQ, each tagged with its REQ ID
 - [ ] Has a traceability row for every REQ (REQ → AC → TEST), with no gaps
+- [ ] States an Entry condition and an Exit condition
 - [ ] Text follows ASD-STE100 style ([references/ste-writing.md](references/ste-writing.md))
 
 …and the epic itself has what/why/how/key-features/non-goals **and its project-level dependencies wired** (linked to the other projects it depends on, or explicitly a foundational solo). If any box is unchecked, the breakdown isn't finished — fix it before calling it done.
