@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Issue Breakdown
@@ -94,6 +94,18 @@ When an issue estimates above 3, split along a real seam rather than slicing arb
 
 After splitting, re-estimate each piece and wire the dependencies between them (the slice that lays the foundation usually **blocks** the others). If a "split" piece is still >3, split again — keep going until everything is ≤3.
 
+## Writing style: Simplified Technical English (ASD-STE100)
+
+Write **all text that goes into Linear** (titles, descriptions, AC, comments, project updates) in ASD-STE100 Simplified Technical English. Do not rewrite text that you quote verbatim. Short rules:
+
+- Instructions and AC: max 20 words per sentence, imperative, active voice, one instruction per sentence.
+- Descriptive text: max 25 words per sentence, max 6 sentences and one topic per paragraph.
+- Noun clusters: max 3 words. Keep "the", "a", "an". Use the same word for the same thing.
+- No -ing verbs, no perfect tenses. Use simple words: "start" not "commence", "make sure" not "ensure", "before" not "prior to".
+- Risky change: put a **WARNING:** first. Write the command, then the risk.
+
+Checklist, word table, before/after examples, and the warning format: [references/ste-writing.md](references/ste-writing.md).
+
 ## Output format
 
 When drafting an issue (before creating it), use this template so nothing in the bar gets skipped:
@@ -147,6 +159,7 @@ The breakdown is done when **every** issue satisfies all of:
 - [ ] If an execution order was requested, the project's visible issue order matches it
 - [ ] Has ≥1 label
 - [ ] If a design/UI issue: has a design screenshot/PNG attached (+ optional source link)
+- [ ] Text follows ASD-STE100 style ([references/ste-writing.md](references/ste-writing.md))
 
 …and the epic itself has what/why/how/key-features/non-goals **and its project-level dependencies wired** (linked to the other projects it depends on, or explicitly a foundational solo). If any box is unchecked, the breakdown isn't finished — fix it before calling it done.
 
