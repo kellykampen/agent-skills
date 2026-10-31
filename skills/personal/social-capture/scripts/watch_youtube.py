@@ -2,22 +2,38 @@
 """
 Watch a YouTube video: download, extract frames, return transcript + frame paths.
 Usage: python scripts/watch_youtube.py <youtube_url>
+
+Uses the sibling extractor, temporary video downloads, and optional browser cookies.
+Returns JSON; the caller owns cleanup of the returned frames directory.
 """
 
+import importlib.util
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parents[4]))
-from youtube_extractor import extract_youtube
 
 SCRIPTS_DIR = Path(__file__).parent
 EXTRACT_FRAMES_SH = SCRIPTS_DIR / "extract_frames.sh"
-VIDEOS_DIR = Path(__file__).parents[4] / "social" / "temp" / "videos"
+YT_DLP = os.getenv("YT_DLP_BIN", "yt-dlp")
+
+
+def _load_extract_youtube():
+    """Load extract_youtube() from the sibling hyphenated module file."""
+    spec = importlib.util.spec_from_file_location(
+        "extract_youtube_mod", str(SCRIPTS_DIR / "extract-youtube.py")
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.extract_youtube
+
+
+def _cookie_args() -> list:
+    browser = os.getenv("YT_DLP_COOKIES_BROWSER", "").strip()
+    return ["--cookies-from-browser", browser] if browser else []
 
 
 def watch_youtube(url: str, max_frames: int = 30) -> dict:
@@ -25,54 +41,48 @@ def watch_youtube(url: str, max_frames: int = 30) -> dict:
     Download a YouTube video, extract frames, and return transcript result + frame paths.
 
     Returns dict with all extract_youtube keys plus:
-      - frames: list of absolute paths to extracted JPG frames
+      - frames: list of absolute paths to extracted PNG frames
       - frames_dir: temp dir holding the frames (caller must clean up after reading)
     """
-    # Step 1: get transcript (subtitles only, fast)
+    extract_youtube = _load_extract_youtube()
+
+    # Step 1: get transcript + metadata (subtitles only, fast).
     transcript_result = extract_youtube(url)
     if not transcript_result["success"]:
         return transcript_result
 
-    # Delete the auto-generated stub summary — watch mode writes a richer one
-    stub = transcript_result.get("summary_path")
-    if stub:
-        try:
-            Path(stub).unlink(missing_ok=True)
-        except OSError:
-            pass
-
-    # Step 2: download video file
-    VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
-    dl_cmd = [
-        "yt-dlp",
-        "--cookies-from-browser", "brave",
-        "--format", "bestvideo[height<=720]+bestaudio/best[height<=720]",
-        "--output", str(VIDEOS_DIR / "%(title)s.%(ext)s"),
-        "--no-playlist",
-        "--print", "after_move:filepath",
-        url,
-    ]
-    dl_result = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=300)
-    if dl_result.returncode != 0:
-        return {**transcript_result, "frames": [], "frames_dir": None,
-                "watch_error": f"Video download failed: {dl_result.stderr[:200]}"}
-
-    video_path = dl_result.stdout.strip().splitlines()[-1]
-    if not Path(video_path).exists():
-        return {**transcript_result, "frames": [], "frames_dir": None,
-                "watch_error": f"Downloaded file not found: {video_path}"}
-
-    # Step 3: extract frames
-    frames_result = subprocess.run(
-        [str(EXTRACT_FRAMES_SH), video_path, "--max-frames", str(max_frames)],
-        capture_output=True, text=True, timeout=120,
-    )
-
-    # Clean up video file — frames are all we need
+    videos_dir = Path(tempfile.mkdtemp(prefix="watch-video-dl-"))
     try:
-        Path(video_path).unlink()
-    except OSError:
-        pass
+        # Step 2: download video file.
+        dl_cmd = [
+            YT_DLP,
+            *_cookie_args(),
+            "--format", "bestvideo[height<=720]+bestaudio/best[height<=720]",
+            "--output", str(videos_dir / "%(title)s.%(ext)s"),
+            "--no-playlist",
+            "--print", "after_move:filepath",
+            url,
+        ]
+        dl_result = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=300)
+        if dl_result.returncode != 0:
+            return {**transcript_result, "frames": [], "frames_dir": None,
+                    "watch_error": f"Video download failed: {dl_result.stderr[:200]}"}
+
+        video_path = dl_result.stdout.strip().splitlines()[-1] if dl_result.stdout.strip() else ""
+        if not video_path or not Path(video_path).exists():
+            return {**transcript_result, "frames": [], "frames_dir": None,
+                    "watch_error": f"Downloaded file not found: {video_path}"}
+
+        # Step 3: extract frames.
+        frames_result = subprocess.run(
+            [str(EXTRACT_FRAMES_SH), video_path, "--max-frames", str(max_frames)],
+            capture_output=True, text=True, timeout=120,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return {**transcript_result, "frames": [], "frames_dir": None,
+                "watch_error": str(error)}
+    finally:
+        shutil.rmtree(videos_dir, ignore_errors=True)
 
     if frames_result.returncode != 0:
         return {**transcript_result, "frames": [], "frames_dir": None,
@@ -94,23 +104,16 @@ def watch_youtube(url: str, max_frames: int = 30) -> dict:
 
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        print("Usage: python watch_youtube.py <youtube_url>")
-        return 1
-
-    result = watch_youtube(sys.argv[1])
-
-    if not result["success"]:
-        print(f"Failed: {result['error']}")
-        return 1
-
-    if result.get("watch_error"):
-        print(f"Transcript saved but watch failed: {result['watch_error']}")
-        return 1
-
-    print(f"Transcript: Social/YouTube/{result['channel']}/transcripts/{Path(result['file_path']).name}")
-    print(f"Frames: {result['frame_count']} extracted to {result['frames_dir']}")
-    return 0
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("url")
+    parser.add_argument("--max-frames", type=int, default=30)
+    args = parser.parse_args()
+    if args.max_frames < 1:
+        parser.error("--max-frames must be positive")
+    result = watch_youtube(args.url, args.max_frames)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["success"] and not result.get("watch_error") else 1
 
 
 if __name__ == "__main__":

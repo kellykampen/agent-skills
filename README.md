@@ -74,6 +74,12 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 | [interview](./skills/workflow/README.md#interview) | Interview you in depth (via AskUserQuestion) to turn an idea into a spec — written in place, in `plans/`, or as Linear issues. _User-invoked._ |
 | [issue-breakdown](./skills/workflow/README.md#issue-breakdown) | Break a feature into a Linear epic + small, review-ready issues with acceptance criteria, Fibonacci ≤3 estimates, and dependency links. |
 
+### Personal capture
+
+| Skill | What it does |
+| --- | --- |
+| [social-capture](./skills/personal/social-capture/SKILL.md) | Save X posts and YouTube videos as structured Obsidian notes, with configurable destinations and optional video-frame analysis. See its [configuration and migration guide](./skills/personal/social-capture/references/configuration.md) before saving. |
+
 ## Orchestration patterns
 
 `cmux-agent-orchestrator` is one lead relaying an operator's intent down to several **project orchestrators**, each of which casts its own ephemeral **workers** — one process per task, cleared the moment it's done, re-cast for the next one. Any capable model can fill the worker seat; the lead only cares that the result comes back verified.
