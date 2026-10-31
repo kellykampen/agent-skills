@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Issue Breakdown
@@ -94,17 +94,17 @@ When an issue estimates above 3, split along a real seam rather than slicing arb
 
 After splitting, re-estimate each piece and wire the dependencies between them (the slice that lays the foundation usually **blocks** the others). If a "split" piece is still >3, split again — keep going until everything is ≤3.
 
-## Writing style: Simplified Technical English (ASD-STE100)
+## Requirements standards: STE100, EARS, Gherkin, traceability, 29148
 
-Write **all text that goes into Linear** (titles, descriptions, AC, comments, project updates) in ASD-STE100 Simplified Technical English. Do not rewrite text that you quote verbatim. Short rules:
+Every issue uses the same standards. The user story (2.1) stays as the first line: it gives the "why". The numbered REQs give the exact behavior. The Gherkin AC (2.2) check each REQ.
 
-- Instructions and AC: max 20 words per sentence, imperative, active voice, one instruction per sentence.
-- Descriptive text: max 25 words per sentence, max 6 sentences and one topic per paragraph.
-- Noun clusters: max 3 words. Keep "the", "a", "an". Use the same word for the same thing.
-- No -ing verbs, no perfect tenses. Use simple words: "start" not "commence", "make sure" not "ensure", "before" not "prior to".
-- Risky change: put a **WARNING:** first. Write the command, then the risk.
-
-Checklist, word table, before/after examples, and the warning format: [references/ste-writing.md](references/ste-writing.md).
+- **Wording: ASD-STE100.** Write all text in Linear (titles, descriptions, AC, comments, updates, procedures/SOPs) in Simplified Technical English. We use it as a style guide, not a certified process. Do not rewrite text that you quote verbatim. See [references/ste-writing.md](references/ste-writing.md).
+- **Requirements: EARS.** Number them `REQ-001` and up, one requirement per ID. Use the ubiquitous, event-driven ("When X, the system shall Y"), state-driven, unwanted-behavior, or optional-feature pattern. See [references/requirements-ears.md](references/requirements-ears.md).
+- **Quality: ISO/IEC/IEEE 29148.** Each REQ is necessary, appropriate, unambiguous, complete, singular, feasible, verifiable, correct, and conforming. Same file.
+- **AC: Gherkin.** One Given/When/Then scenario per AC, still as a `- [ ]` checkbox, with ≥1 AC per REQ. Every Then is testable.
+- **Traceability: REQ → AC → TEST.** Each issue has a table that maps each REQ to its AC and test. Nothing gets built without a check. See [references/traceability.md](references/traceability.md).
+- **Diagrams: Mermaid.** Use a Mermaid flowchart for issue dependencies in the epic, and a REQ → AC → TEST graph for complex issues. Same file.
+- **Risky change:** put a **WARNING:** first. Write the command, then the risk.
 
 ## Output format
 
@@ -115,9 +115,18 @@ When drafting an issue (before creating it), use this template so nothing in the
 
 As a <role>, I want to <action>, so <result>.
 
+### Requirements
+- **REQ-001:** When <trigger>, the <system> shall <response>.
+- **REQ-002:** …
+
 ### Acceptance criteria
-- [ ] observable, testable condition
-- [ ] …
+- [ ] **AC-001 (REQ-001)** Given <state>, When <action>, Then <observable result>.
+- [ ] **AC-002 (REQ-002)** …
+
+### Traceability
+| REQ | AC | Test |
+| --- | --- | --- |
+| REQ-001 | AC-001 | <test file › test name> |
 
 ### Notes / design
 - Design: <screenshot attached> · <optional prototype/Figma/Claude Design link>   (design issues only)
@@ -133,6 +142,7 @@ And for the epic:
 **What:** …  **Why:** …  **How:** …
 **Key features:** …
 **Non-goals:** …
+**Dependencies:** Mermaid flowchart of the issues (A --> B means A blocks B)
 ```
 
 ## Step 4 — Create it (tool notes)
@@ -159,6 +169,9 @@ The breakdown is done when **every** issue satisfies all of:
 - [ ] If an execution order was requested, the project's visible issue order matches it
 - [ ] Has ≥1 label
 - [ ] If a design/UI issue: has a design screenshot/PNG attached (+ optional source link)
+- [ ] Has numbered EARS requirements (`REQ-001`…, one per ID) that pass the 29148 checks
+- [ ] Has ≥1 Gherkin AC checkbox per REQ, each tagged with its REQ ID
+- [ ] Has a traceability row for every REQ (REQ → AC → TEST), with no gaps
 - [ ] Text follows ASD-STE100 style ([references/ste-writing.md](references/ste-writing.md))
 
 …and the epic itself has what/why/how/key-features/non-goals **and its project-level dependencies wired** (linked to the other projects it depends on, or explicitly a foundational solo). If any box is unchecked, the breakdown isn't finished — fix it before calling it done.
