@@ -11,7 +11,8 @@ Read this when you write the **Acceptance criteria** and **Traceability** sectio
 
 ```markdown
 ### Acceptance criteria
-- [ ] **AC-001 (REQ-002)** Given 3 active members are selected, When the admin selects "Archive", Then the 3 members show under Archived And not in the active list.
+- [ ] **AC-001 (REQ-002)** Given 3 active members are selected, When the admin selects "Archive", Then the 3 members show under Archived.
+- [ ] **AC-003 (REQ-002)** Given 3 active members are selected, When the admin selects "Archive", Then the active list does not show the 3 members.
 - [ ] **AC-002 (REQ-004)** Given a user without the admin role, When the user calls POST /members/archive, Then the API returns 403.
 ```
 
@@ -24,6 +25,7 @@ Nothing gets built without a check. Each REQ maps to ≥1 AC, and each AC maps t
 | REQ | AC | Test |
 | --- | --- | --- |
 | REQ-002 | AC-001 | e2e: `members/archive.spec.ts` › "bulk archive" |
+| REQ-002 | AC-003 | e2e: `members/archive.spec.ts` › "removed from active list" |
 | REQ-004 | AC-002 | api: `archive.test.ts` › "rejects non-admin" |
 ```
 
@@ -31,7 +33,14 @@ A REQ with no AC, or an AC with no test, is a gap. Fill it before the issue is r
 
 ## Mermaid diagrams
 
-Use Mermaid (Linear renders ```` ```mermaid
+Use Mermaid diagrams (Linear renders `mermaid` code blocks) for plans and dependencies:
+
+- In the **epic** (one project = one feature): a flowchart of issue dependencies (A blocks B), with the Entry and Exit condition of each issue.
+- In a **complex issue**: a REQ → AC → TEST graph.
+
+Keep each diagram small (≤12 nodes). Use the issue IDs and REQ/AC IDs, not long labels.
+
+```mermaid
 flowchart LR
   E101["ENG-101 Archive API<br/>Entry: schema approved<br/>Exit: AC-002 verified"]
   E102["ENG-102 Archive button<br/>Entry: ENG-101 Done<br/>Exit: AC-001 verified"]
@@ -39,5 +48,6 @@ flowchart LR
   E101 -- blocks --> E102
   E101 -- blocks --> E103
   R2["REQ-002"] --> A1["AC-001"] --> T1["archive.spec.ts"]
+  R2 --> A3["AC-003"] --> T1
   R4["REQ-004"] --> A2["AC-002"] --> T2["archive.test.ts"]
 ```
