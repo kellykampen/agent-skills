@@ -104,7 +104,7 @@ Every issue uses the same standards. The user story (2.1) stays as the first lin
 - **AC: Gherkin.** One Given/When/Then scenario per AC, still as a `- [ ]` checkbox, with ≥1 AC per REQ. Every Then is testable.
 - **Traceability: REQ → AC → TEST.** Each issue has a table that maps each REQ to its AC and test. Nothing gets built without a check. See [references/traceability.md](references/traceability.md).
 - **Diagrams: Mermaid.** Use a Mermaid flowchart for issue dependencies in the epic, and a REQ → AC → TEST graph for complex issues. Same file.
-- **Structure.** One Linear project = one feature. Its issues are the work for that feature. Every issue has dependency links (blocks / blocked by, or "none") and states an **Entry** condition (what must be true to start, e.g. "ENG-101 is Done") and an **Exit** condition (what proves it is done: all AC checked and verified, tests pass). The Mermaid dependency flowchart shows entry and exit for each issue.
+- **Structure.** Project = epic = one feature (Step 1). Parent and dependency links already apply (2.4, 2.5). Add to each issue an **Entry** condition (what must be true to start, e.g. "ENG-101 is Done") and an **Exit** condition (the Definition of Done in 2.2, plus the traceability tests pass). The Mermaid dependency flowchart shows both.
 - **Risky change:** put a **WARNING:** first. Write the command, then the risk.
 
 ## Output format
