@@ -58,7 +58,7 @@ If you are not sure that a word is approved, use the most common simple word wit
 **Acceptance criteria**
 
 - Before: `- [ ] Ensure that admins are able to utilize the bulk archive functionality`
-- After: `- [ ] An admin can archive more than one member in one action.`
+- After: `- [ ] **AC-001 (REQ-001)** Given 3 members are selected, When the admin selects "Archive", Then the 3 members show under Archived.`
 
 **Comment / project update**
 
