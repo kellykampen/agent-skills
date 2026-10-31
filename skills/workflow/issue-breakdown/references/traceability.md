@@ -33,8 +33,11 @@ A REQ with no AC, or an AC with no test, is a gap. Fill it before the issue is r
 
 Use Mermaid (Linear renders ```` ```mermaid
 flowchart LR
-  E101["ENG-101 Archive API"] --> E102["ENG-102 Archive button"]
-  E101 --> E103["ENG-103 Archived list"]
+  E101["ENG-101 Archive API<br/>Entry: schema approved<br/>Exit: AC-002 verified"]
+  E102["ENG-102 Archive button<br/>Entry: ENG-101 Done<br/>Exit: AC-001 verified"]
+  E103["ENG-103 Archived list<br/>Entry: ENG-101 Done<br/>Exit: AC-003 verified"]
+  E101 -- blocks --> E102
+  E101 -- blocks --> E103
   R2["REQ-002"] --> A1["AC-001"] --> T1["archive.spec.ts"]
   R4["REQ-004"] --> A2["AC-002"] --> T2["archive.test.ts"]
 ```
