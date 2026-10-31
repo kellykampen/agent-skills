@@ -105,7 +105,7 @@ Every issue uses the same standards. The user story (2.1) stays as the first lin
 - **Traceability: REQ → AC → TEST.** Each issue has a table that maps each REQ to its AC and test. Nothing gets built without a check. See [references/traceability.md](references/traceability.md).
 - **Diagrams: Mermaid.** Use a Mermaid flowchart for issue dependencies in the epic, and a REQ → AC → TEST graph for complex issues. Same file.
 - **Structure.** Project = epic = one feature (Step 1). Parent and dependency links already apply (2.4, 2.5). Add to each issue an **Entry** condition (what must be true to start, e.g. "ENG-101 is Done") and an **Exit** condition (the Definition of Done in 2.2, plus the traceability tests pass). The Mermaid dependency flowchart shows both.
-- **Risky change:** put a **WARNING:** first. Write the command, then the risk.
+- **Risky change:** put **WARNING:** (injury, data loss, security) or **CAUTION:** (damage to systems, money, schedule) first. Write the command, then the risk.
 
 ## Output format
 
@@ -144,7 +144,8 @@ And for the epic:
 **What:** …  **Why:** …  **How:** …
 **Key features:** …
 **Non-goals:** …
-**Dependencies:** Mermaid flowchart of the issues (A --> B means A blocks B)
+**Project dependencies:** other projects this epic builds on (`projectRelationCreate`), or "foundational"
+**Issue dependencies:** Mermaid flowchart of the issues (A --> B means A blocks B), with Entry/Exit per issue
 ```
 
 ## Step 4 — Create it (tool notes)
