@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.3.0"
+  version: "1.5.0"
 ---
 
 # Issue Breakdown
@@ -94,6 +94,19 @@ When an issue estimates above 3, split along a real seam rather than slicing arb
 
 After splitting, re-estimate each piece and wire the dependencies between them (the slice that lays the foundation usually **blocks** the others). If a "split" piece is still >3, split again — keep going until everything is ≤3.
 
+## Requirements standards: STE100, EARS, Gherkin, traceability, 29148
+
+Every issue uses the same standards. The user story (2.1) stays as the first line: it gives the "why". The numbered REQs give the exact behavior. The Gherkin AC (2.2) check each REQ.
+
+- **Wording: ASD-STE100.** Write all text in Linear (titles, descriptions, AC, comments, updates, procedures/SOPs) in Simplified Technical English. We use it as a style guide, not a certified process. Do not rewrite text that you quote verbatim. See [references/ste-writing.md](references/ste-writing.md).
+- **Requirements: EARS.** Number them `REQ-001` and up, one requirement per ID. Use the ubiquitous, event-driven ("When X, the system shall Y"), state-driven, unwanted-behavior, or optional-feature pattern. See [references/requirements-ears.md](references/requirements-ears.md).
+- **Quality: ISO/IEC/IEEE 29148.** Each REQ is necessary, appropriate, unambiguous, complete, singular, feasible, verifiable, correct, and conforming. Same file.
+- **AC: Gherkin.** One Given/When/Then scenario per AC, still as a `- [ ]` checkbox, with ≥1 AC per REQ. Every Then is testable.
+- **Traceability: REQ → AC → TEST.** Each issue has a table that maps each REQ to its AC and test. Nothing gets built without a check. See [references/traceability.md](references/traceability.md).
+- **Diagrams: Mermaid.** Use a Mermaid flowchart for issue dependencies in the epic, and a REQ → AC → TEST graph for complex issues. Same file.
+- **Structure.** Project = epic = one feature (Step 1). Parent and dependency links already apply (2.4, 2.5). Add to each issue an **Entry** condition (what must be true to start, e.g. "ENG-101 is Done") and an **Exit** condition (the Definition of Done in 2.2, plus the traceability tests pass). The Mermaid dependency flowchart shows both.
+- **Risky change:** put **WARNING:** (injury, data loss, security) or **CAUTION:** (damage to systems, money, schedule) first. Write the command, then the risk.
+
 ## Output format
 
 When drafting an issue (before creating it), use this template so nothing in the bar gets skipped:
@@ -103,15 +116,25 @@ When drafting an issue (before creating it), use this template so nothing in the
 
 As a <role>, I want to <action>, so <result>.
 
+### Requirements
+- **REQ-001:** When <trigger>, the <system> shall <response>.
+- **REQ-002:** …
+
 ### Acceptance criteria
-- [ ] observable, testable condition
-- [ ] …
+- [ ] **AC-001 (REQ-001)** Given <state>, When <action>, Then <observable result>.
+- [ ] **AC-002 (REQ-002)** …
+
+### Traceability
+| REQ | AC | Test |
+| --- | --- | --- |
+| REQ-001 | AC-001 | <test file › test name> |
 
 ### Notes / design
 - Design: <screenshot attached> · <optional prototype/Figma/Claude Design link>   (design issues only)
 
 **Estimate:** 1|2|3   **Labels:** area, type   **Epic:** project
 **Depends on / blocks:** issue refs, or "none"
+**Entry:** what must be true to start   **Exit:** all AC checked + verified, tests in the traceability table pass
 ```
 
 And for the epic:
@@ -121,6 +144,8 @@ And for the epic:
 **What:** …  **Why:** …  **How:** …
 **Key features:** …
 **Non-goals:** …
+**Project dependencies:** other projects this epic builds on (`projectRelationCreate`), or "foundational"
+**Issue dependencies:** Mermaid flowchart of the issues (A --> B means A blocks B), with Entry/Exit per issue
 ```
 
 ## Step 4 — Create it (tool notes)
@@ -147,6 +172,11 @@ The breakdown is done when **every** issue satisfies all of:
 - [ ] If an execution order was requested, the project's visible issue order matches it
 - [ ] Has ≥1 label
 - [ ] If a design/UI issue: has a design screenshot/PNG attached (+ optional source link)
+- [ ] Has numbered EARS requirements (`REQ-001`…, one per ID) that pass the 29148 checks
+- [ ] Has ≥1 Gherkin AC checkbox per REQ, each tagged with its REQ ID
+- [ ] Has a traceability row for every REQ (REQ → AC → TEST), with no gaps
+- [ ] States an Entry condition and an Exit condition
+- [ ] Text follows ASD-STE100 style ([references/ste-writing.md](references/ste-writing.md))
 
 …and the epic itself has what/why/how/key-features/non-goals **and its project-level dependencies wired** (linked to the other projects it depends on, or explicitly a foundational solo). If any box is unchecked, the breakdown isn't finished — fix it before calling it done.
 
