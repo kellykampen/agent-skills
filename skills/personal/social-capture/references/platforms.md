@@ -1,64 +1,30 @@
-# Supported Platforms
+# Platform extraction
 
 ## YouTube
 
-**Status:** Implemented
+The self-contained extractor calls `yt-dlp --dump-json --no-playlist` for metadata,
+then downloads manual or automatic WebVTT subtitles into a temporary folder. It strips
+cue timestamps and markup and removes consecutive repeated subtitle lines.
 
-**URL Patterns:**
-- `https://www.youtube.com/watch?v=VIDEO_ID`
-- `https://youtu.be/VIDEO_ID`
-- `youtube.com/watch?v=VIDEO_ID`
+Configure the executable with `YT_DLP_BIN`, otherwise it resolves `yt-dlp` on `PATH`.
+`YT_SUB_LANGS` defaults to `en.*,en`. Browser cookies are off by default; use
+`YT_DLP_COOKIES_BROWSER` to select an authorized browser when required.
 
-**Extraction Method:** `yt-dlp` with `--write-auto-sub`
+Successful metadata extraction returns `success: true` even when subtitles are absent
+or subtitle extraction fails. `transcript_available: false` indicates a metadata-only
+capture; the script does not currently distinguish absent captions from subtitle-fetch
+errors. Metadata failures return `success: false` and an error message.
 
-**Requirements:**
-- `yt-dlp` installed via Homebrew
-- Brave browser for cookies (bypasses age restrictions)
-
-**Output:** Markdown file with timestamped transcript
-
----
+Watch mode downloads a video at up to 720p and calls the included frame extractor.
+It deletes its downloaded video folder on success or failure. Successful PNG frames
+remain in the returned `frames_dir` until the caller removes them.
 
 ## X/Twitter
 
-**Status:** Implemented
+Read rendered post text with an available authorized browser tool. Existing Finch
+access may supply metadata or fallback text. Source completeness depends on the client
+and API response; mark partial captures with `truncated: true` and report the limitation.
+The saver retains `author_id` when the author name and handle are unknown.
 
-**URL Patterns:**
-- `https://x.com/username/status/ID`
-- `https://twitter.com/username/status/ID`
-
-**Extraction Method:** Brave MCP (primary) or Chrome MCP
-
-**Why browser:** Scrapers truncate "note tweets" (long-form posts) to 275 chars. Browser renders full content.
-
-**Brave MCP Workflow:**
-1. `brave_launch()` - ensure Brave is running with remote debugging
-2. `brave_tabs()` - list available tabs
-3. `brave_navigate(url)` - load the tweet
-4. `brave_get_page_text()` - extract full content
-
-**Chrome MCP Workflow (if available):**
-1. `tabs_context_mcp(createIfEmpty=True)` - get/create tab group
-2. `tabs_create_mcp()` - create new tab
-3. `navigate(tabId, url)` - load the tweet
-4. `get_page_text(tabId)` - extract full content
-
-**NEVER use Apify, WebFetch, or any scraper for X posts.** If browser fails, report the error — do not fall back to scrapers.
-
-**Output:** Markdown file with tweet text, author, date, engagement stats
-
----
-
-## Podcasts
-
-**Status:** Not implemented
-
-**Notes:** Many podcasts on YouTube can use YouTube extractor.
-
----
-
-## Articles
-
-**Status:** Not implemented
-
-**Planned Method:** Web scraping with readability extraction.
+The scripts render supplied records; they do not authenticate to X, read bookmarks,
+or configure browser sessions. No paid scraper is required.

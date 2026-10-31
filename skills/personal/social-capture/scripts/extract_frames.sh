@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# extract_frames.sh — extract JPG frames from a video for visual analysis.
+# extract_frames.sh — extract PNG frames from a video for visual analysis.
 #
 # Usage:
 #   extract_frames.sh <video_path> [options]
@@ -56,8 +56,7 @@ command -v ffprobe >/dev/null 2>&1 || err_json "ffprobe not found on PATH (ships
 
 # Filename safety: copy to a path with no spaces / colons / unicode quirks.
 # This avoids shell-escaping issues that have repeatedly bitten ad-hoc ffmpeg invocations.
-EXT="${VIDEO_PATH##*.}"
-SAFE_PATH="$(mktemp -t watch-video).${EXT}"
+SAFE_PATH="$(mktemp "${TMPDIR:-/tmp}/watch-video.XXXXXX")"
 cp "$VIDEO_PATH" "$SAFE_PATH"
 trap 'rm -f "$SAFE_PATH"' EXIT
 
@@ -67,7 +66,7 @@ DURATION_INT="${DURATION%.*}"
 [[ "$DURATION_INT" -le 0 ]] && err_json "could not read video duration (corrupt or unsupported codec?)"
 
 if [[ -z "$OUTPUT_DIR" ]]; then
-  OUTPUT_DIR="$(mktemp -d -t watch-video-frames)"
+  OUTPUT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/watch-video-frames.XXXXXX")"
 fi
 mkdir -p "$OUTPUT_DIR"
 
@@ -103,11 +102,11 @@ else
   VF="fps=${EFFECTIVE_FPS},scale=${WIDTH}:-2"
 fi
 
-# Run ffmpeg. -vsync vfr keeps scene-detection from duplicating frames.
+# Run ffmpeg. VFR timing keeps scene detection from duplicating frames.
 ffmpeg -y -hide_banner -loglevel error \
   -i "$SAFE_PATH" \
   -vf "$VF" \
-  -vsync vfr \
+  -fps_mode vfr \
   "$OUTPUT_DIR/frame_%03d.png" \
   || err_json "ffmpeg extraction failed"
 
