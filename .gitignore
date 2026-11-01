@@ -22,3 +22,5 @@ __pycache__/
 
 # Local linked worktrees
 /.worktrees/
+
+/.worktree-state/

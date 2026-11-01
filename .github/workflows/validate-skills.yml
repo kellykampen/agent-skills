@@ -7,10 +7,22 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-2-ubuntu-2404
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Validate SKILL.md frontmatter
         run: python3 scripts/validate_skills.py
       - name: Test social-capture scripts without network access
         run: python3 -m unittest discover -s tests -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: PR metadata and lifecycle tests
+        env:
+          NODE_OPTIONS: --max-old-space-size=512
+        run: |
+          node --test --test-concurrency=1 scripts/pr-standard.test.mjs scripts/enforce-pr-standard.test.mjs
+          python3 -m unittest discover -s scripts/worktree -p 'test_*.py' -v
