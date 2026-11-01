@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Fantastic.dev">
+  <title>Fantastic.dev</title>
+  <!-- Brand mark: accent tile (accent #94C173) + "F/" glyph (accent-fg #0c0e13). Design System v1. -->
+  <rect width="64" height="64" rx="16" fill="#94C173"/>
+  <path d="M12 12 H32 V20 H20 V26 H29 V34 H20 V52 H12 Z" fill="#0c0e13"/>
+  <path d="M42 12 H51 L45 52 H36 Z" fill="#0c0e13"/>
+</svg>

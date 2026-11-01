@@ -4,6 +4,12 @@
 
 # agent-skills
 
+<img src="media/fantastic-dev-logo.svg" alt="Fantastic.Dev" width="40">
+
+[A Fantastic.Dev Project](https://fantastic.dev)
+
+[![Fantastic.Dev](https://img.shields.io/badge/Fantastic.Dev-Project-black)](https://fantastic.dev)
+
 [![release](https://img.shields.io/github/v/release/kellykampen/agent-skills?labelColor=333&color=e2694e)](https://github.com/kellykampen/agent-skills/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue?labelColor=333)](LICENSE)
 
@@ -117,3 +123,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for notable changes. Individual skills also c
 ## License
 
 [MIT](./LICENSE). Use them, fork them, make them yours.
+
+## Contributing
+
+See [worktree development](docs/worktrees.md) and the [PR standard](docs/pull-request-standard.md).
