@@ -26,3 +26,15 @@ jobs:
         run: |
           node --test --test-concurrency=1 scripts/pr-standard.test.mjs scripts/enforce-pr-standard.test.mjs
           python3 -m unittest discover -s scripts/worktree -p 'test_*.py' -v
+      - name: Validate actual PR metadata and negative control (read-only)
+        if: github.event_name == 'pull_request'
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          import { validatePullRequest } from './scripts/pr-standard.mjs';
+          const { pull_request: pr } = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+          assert.deepEqual(validatePullRequest(pr), []);
+          assert.ok(validatePullRequest({ ...pr, title: 'invalid metadata' }).length);
+          console.log('Actual PR metadata accepted; invalid title rejected. No write token used.');
+          JS

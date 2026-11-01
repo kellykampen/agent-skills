@@ -7,3 +7,5 @@ Run focused checks sequentially with NODE_OPTIONS=--max-old-space-size=512 for N
 Write-token metadata jobs must execute trusted base code only. PRs need the owning ticket after the title colon, five ordered sections, actual agent/session identity, accessible evidence and acceptance checklist. Never claim skipped checks passed.
 
 All local Node test suites must hold `/home/cloudagent/.cache/fantastic-heavy.lock` for the entire subprocess tree: `flock -w 3600 /home/cloudagent/.cache/fantastic-heavy.lock env NODE_OPTIONS=--max-old-space-size=512 node --test --test-concurrency=1 <specific test files>`. Do not nest this lock.
+
+The shared lock requirement applies to all local test suites, including Python suites and toolkit checks. CI runners are separate from this shared VPS.

@@ -24,3 +24,5 @@ python3 -m unittest discover -s scripts/worktree -p 'test_*.py' -v
 All CI compute uses UbiCloud Linux. Inspect current-head Actions job labels, runner identity and conclusion; queued jobs do not prove runner integration. Never substitute GitHub-hosted compute. Metadata activates after trusted files reach base. Verify required-status protection and plan support separately; this PR does not assert those are enabled.
 
 All local Node test suites must hold `/home/cloudagent/.cache/fantastic-heavy.lock` for the entire subprocess tree: `flock -w 3600 /home/cloudagent/.cache/fantastic-heavy.lock env NODE_OPTIONS=--max-old-space-size=512 node --test --test-concurrency=1 <specific test files>`. Do not nest this lock.
+
+The shared lock requirement applies to all local test suites, including Python suites and toolkit checks. CI runners are separate from this shared VPS.
