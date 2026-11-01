@@ -147,3 +147,21 @@ Imported from JibHQ/jib-factory commit `fae094712705fc1baba55fb4b3cfaaef78041b3a
 The unchanged logo is from FantasticDevHQ/fantastic-dev-brand-kit commit `0ce1aebc3e8418d7e59ce171e117cf9793dd2f3a`, `assets/brand/logo-mark.svg`. Existing MIT licensing is preserved.
 
 Local adaptations normalize LF/CRLF/lone-CR bodies and publish a best-effort failure status on API errors while preserving the original exception. The exact README-only `media/fantastic-dev-logo.svg` is excluded from application UI detection; other image assets retain the canonical media requirement.
+
+## Required status names
+
+The canonical required contexts are `PR standard` and `Repository quality gates`.
+This backend-free repository has no `Real app backend isolation` job.
+`validate` retains all skill validation, Python regression, lifecycle, Node metadata
+and actual-PR metadata checks. The `Repository quality gates` aggregate runs with
+`always()` and requires `needs.validate.result` to equal `success`, so failure,
+cancellation and skipped validation cannot produce a passing aggregate. Existing
+required `validate` coverage remains available during the protection migration.
+
+The coordinator manages branch protection centrally. Require the canonical
+quality context after it has actually emitted, preserve other existing checks and
+review policies, and bind checks to their observed GitHub App identity where
+supported. Activate `PR standard` only after its trusted workflow/scripts reach
+the base branch; never run PR-head code with its write token for bootstrap.
+Read protection settings and emitted statuses/check runs back through the API.
+Record plan/access errors verbatim without claiming protection succeeded.

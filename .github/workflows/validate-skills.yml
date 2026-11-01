@@ -38,3 +38,21 @@ jobs:
           assert.ok(validatePullRequest({ ...pr, title: 'invalid metadata' }).length);
           console.log('Actual PR metadata accepted; invalid title rejected. No write token used.');
           JS
+
+  repository-quality-gates:
+    name: Repository quality gates
+    needs: [validate]
+    if: ${{ always() }}
+    runs-on: ubicloud-standard-2-ubuntu-2404
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - name: Require completed validation
+        env:
+          VALIDATION_RESULT: ${{ needs.validate.result }}
+        run: |
+          if [ "$VALIDATION_RESULT" != success ]; then
+            echo "Required validation did not succeed: $VALIDATION_RESULT"
+            exit 1
+          fi
+          echo "All repository validation checks succeeded."
