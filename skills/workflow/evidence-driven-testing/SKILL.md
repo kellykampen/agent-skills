@@ -53,6 +53,49 @@ Record annotated screen-recording proof of UI behavior, then attach it to the PR
 - Attach the same video to the tracker issue (Linear/Jira) with a one-line result.
 - Send the report + recording to the requester.
 
+### Native GitHub attachment upload
+
+Before uploading, check the installed CLI with `gh pr comment --help` and
+`gh issue comment --help`. When the relevant command supports `--attach`, prefer
+it over asking the user to sign into a browser. If support is absent or upload
+fails, report the specific limitation and use an available authorized fallback.
+Keep existing authentication and action-authorization rules.
+
+Use this workflow only for real evidence on the intended PR or issue, never a
+throwaway live comment to test CLI support. Review media for secrets and private
+data, and preserve the target repository's access boundaries. Do not move private
+evidence to a public repository or host to work around an access failure.
+
+For an authorized PR evidence comment, write the report to a body file and upload:
+
+```bash
+gh pr comment "$PR_URL" --body-file /tmp/evidence/comment.md \
+  --attach '/tmp/evidence/screenshot.png#Verified affected flow' \
+  --attach /tmp/evidence/flow.mp4
+```
+
+Use `gh issue comment "$ISSUE_URL"` for a GitHub issue. Repeat `--attach` for up
+to 50 files. Image alt text follows `path#alt-text`; videos have no alt text.
+Local references such as `![Verified affected flow](./screenshot.png)` in the
+body are rewritten to uploaded URLs. Body-file paths resolve relative to that
+file's directory, falling back to the working directory. Unreferenced attachments
+are appended, and existing body references retain their alt text.
+
+Read back the exact resulting comment using its returned URL or comment ID, for
+example `gh api "repos/OWNER/REPO/issues/comments/COMMENT_ID" --jq .body`. Obtain
+the actual native GitHub upload URLs from that body; never fabricate asset URLs
+or substitute the comment permalink for a media URL.
+
+A comment upload alone does not satisfy a repository's PR-description evidence
+rule. Read the current PR body, preserve its other content, and put the returned
+URLs in its `Evidence` section with `gh pr edit "$PR_URL" --body-file BODY_FILE`.
+For UI changes, LaunchHunt requires `UI changes: Yes` plus `Screenshot: ![description](URL)` and/or
+`Video: URL`, using actual `https://github.com/user-attachments/assets/...` URLs.
+Read back the PR body and run its evidence validator when available. Keep current
+post-change test results, tested commit and limitations alongside the media;
+successful upload does not prove the changed flow works. Repository files,
+release assets and local paths do not replace native attachments when required.
+
 ## Guardrails
 
 - Never record a half-covered or tiled window — maximize first.
