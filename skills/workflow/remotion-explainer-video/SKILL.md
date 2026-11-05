@@ -132,8 +132,10 @@ the user for review. If this is going into a README on GitHub: a plain markdown 
 - **GitHub video embedding**: a `<video src="relative/path.mp4">` tag gets stripped entirely by
   GitHub's markdown sanitizer for repo-committed files (verified against the `/markdown` API
   directly — it renders as an empty paragraph). `<video>`/`<audio>` only survive when the `src`
-  is on GitHub's own `user-attachments` asset domain, which requires uploading through the web
-  UI (an issue/PR comment box), not a git commit. For a reliable inline-preview embed in a
+  is on GitHub's own `user-attachments` asset domain. Upload PR evidence with
+  `gh pr create`, `gh pr edit`, or `gh pr comment` and `--attach`, not computer use
+  or a git commit. If native CLI upload fails, report the limitation; do not silently
+  switch to browser upload. For a reliable inline-preview embed in a
   README, use the GIF as a plain markdown image and link the MP4 separately for anyone who
   wants audio.
 - **Don't assume a browser-automation tool's success signal means the download landed** — see
