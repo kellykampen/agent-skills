@@ -10,9 +10,9 @@ metadata:
 
 # Evidence-Driven Testing
 
-Record annotated screen-recording proof of UI behavior, then attach it to the PR and tracker issue.
+Review suitable screenshots or recordings that already exist. Capture new annotated screen-recording proof only when the needed media is missing. Then upload to the requested PR or tracker destination, or deliver directly to the requester.
 
-Requires captured media or a way to capture it, plus authenticated gh or an equivalent authorized upload tool. Browser access is needed only for browser-based testing, not evidence uploads.
+Requires suitable captured media or a way to capture it. Authenticated gh is required only when uploading to GitHub; capture-only work and direct delivery to the requester do not require upload authorization. Browser access is needed only for browser-based testing, not evidence uploads.
 
 ## Inputs
 
@@ -20,6 +20,8 @@ Requires captured media or a way to capture it, plus authenticated gh or an equi
 - **PR / issue** (optional): Where to post the evidence. If omitted, deliver to the requester only.
 
 ## Instructions
+
+When suitable media already exists, start at step 4 and review it; do not record again.
 
 ### 1. Prepare the screen
 
@@ -87,7 +89,9 @@ gh pr edit "$PR_URL" --attach '/tmp/evidence/screenshot.png#Verified affected fl
 
 Use `--body-file` as well when placing the media in a specific section. Read the
 current body first and preserve unrelated content. On partial upload failure,
-read back the result before retrying to avoid duplicate media.
+compare the read-back body with the intended media, preserve successful attachments,
+and retry only failed or still-missing files. Do not resubmit the full original
+attachment list or overwrite unrelated body content.
 
 Use `gh issue comment "$ISSUE_URL"` for a GitHub issue. Repeat `--attach` for up
 to 50 files. Image alt text follows `path#alt-text`; videos have no alt text.
