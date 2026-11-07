@@ -1,18 +1,18 @@
 ---
 name: evidence-driven-testing
 description: >
-  Records visual proof while testing UI behavior — screen recording with structured
-  test/assertion annotations — then posts the video and a results summary to the PR
-  and tracker issue. Use whenever a UI change needs verifiable evidence that it works,
-  instead of prose claims.
-compatibility: Requires a GUI environment with screen recording, an authenticated browser session for the app under test, and gh (GitHub CLI) or equivalent for posting evidence.
+  Capture or upload screenshot and video evidence for UI changes, pull requests,
+  and tracker issues. Use when posting PR evidence, including files already captured
+  by Playwright. Use native gh --attach for uploads; do not upload through computer use.
 metadata:
-  version: "1.0"
+  version: "1.2"
 ---
 
 # Evidence-Driven Testing
 
-Record annotated screen-recording proof of UI behavior, then attach it to the PR and tracker issue.
+Review suitable screenshots or recordings that already exist. Capture new annotated screen-recording proof only when the needed media is missing. Then upload to the requested PR or tracker destination, or deliver directly to the requester.
+
+Requires suitable captured media or a way to capture it. Authenticated gh is required only when uploading to GitHub; capture-only work and direct delivery to the requester do not require upload authorization. Browser access is needed only for browser-based testing, not evidence uploads.
 
 ## Inputs
 
@@ -20,6 +20,8 @@ Record annotated screen-recording proof of UI behavior, then attach it to the PR
 - **PR / issue** (optional): Where to post the evidence. If omitted, deliver to the requester only.
 
 ## Instructions
+
+When suitable media already exists, start at step 4 and review it; do not record again.
 
 ### 1. Prepare the screen
 
@@ -55,10 +57,15 @@ Record annotated screen-recording proof of UI behavior, then attach it to the PR
 
 ### Native GitHub attachment upload
 
-Before uploading, check the installed CLI with `gh pr comment --help` and
-`gh issue comment --help`. When the relevant command supports `--attach`, prefer
-it over asking the user to sign into a browser. If support is absent or upload
-fails, report the specific limitation and use an available authorized fallback.
+Before uploading or declaring attachment uploads unavailable, check the installed
+CLI with `gh pr comment --help`, `gh pr edit --help`, or `gh issue comment --help`
+for the intended operation. When it supports `--attach`, use the native CLI
+attachment upload. Do not use computer-use or browser automation to attach proof.
+This also applies when a connected GitHub tool lacks
+an upload method. Reuse existing screenshots or recordings; uploading evidence
+does not require recording the flow again. If support is absent or upload
+fails, report the specific CLI limitation and stop the upload. Do not silently
+switch to computer use; ask the owner before choosing another upload method.
 Keep existing authentication and action-authorization rules.
 
 Use this workflow only for real evidence on the intended PR or issue, never a
@@ -73,6 +80,18 @@ gh pr comment "$PR_URL" --body-file /tmp/evidence/comment.md \
   --attach '/tmp/evidence/screenshot.png#Verified affected flow' \
   --attach /tmp/evidence/flow.mp4
 ```
+
+To attach directly to an existing PR description while preserving its body:
+
+```bash
+gh pr edit "$PR_URL" --attach '/tmp/evidence/screenshot.png#Verified affected flow'
+```
+
+Use `--body-file` as well when placing the media in a specific section. Read the
+current body first and preserve unrelated content. On partial upload failure,
+compare the read-back body with the intended media, preserve successful attachments,
+and retry only failed or still-missing files. Do not resubmit the full original
+attachment list or overwrite unrelated body content.
 
 Use `gh issue comment "$ISSUE_URL"` for a GitHub issue. Repeat `--attach` for up
 to 50 files. Image alt text follows `path#alt-text`; videos have no alt text.
