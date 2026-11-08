@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.5.0"
+  version: "1.6.0"
 ---
 
 # Issue Breakdown
@@ -59,7 +59,7 @@ Make each box one **observable, testable** condition — something you could han
 - [ ] the archive endpoint returns 403 for non-admin callers
 ```
 
-**These boxes are the Definition of Done.** An issue is **not Done until every AC checkbox is checked** — moving an issue to Done with unchecked (or bullet-point, un-checkable) AC is a defect, not a done issue. And a box may **only be checked after an independent agent has verified that specific criterion against the actual codebase** — ran the test, hit the endpoint, saw the behavior — via the `linear-ac-verification` skill or an independent reviewer. Never self-check, never tick a box on a claim or a "looks done." This is why the format matters: a bullet can't be checked, so it can never be verified or closed — which is exactly how "Done" issues end up with work that was never actually confirmed.
+**These boxes are the child's Definition of Done.** Each box must be verified against actual code or behavior by an independent reviewer or the `linear-ac-verification` flow. Record the evidence; do not check a box from an unsupported claim. Complete this verification before merging the child's PR so that merge can close the ticket. Do not copy project-wide build, deployment, integration or sibling requirements into a child unless that PR actually delivers them. Parent acceptance remains open independently.
 
 ### 2.3 Fibonacci estimate, 3 points or less
 
@@ -83,6 +83,20 @@ Label each issue enough to filter and route it — area/domain, type (feature/bu
 
 If an issue is a **design/UI ticket**, it must include a **screenshot or PNG export of the target design** attached to the issue — the implementer builds to match a picture, not a paragraph. Optionally add a link to the source (prototype, Figma, or Claude Design). A UI ticket without the visual is not ready; the copy and layout live in the design, and "build it like the mock" only works if the mock is on the ticket.
 
+### 2.8 One implementation ticket, one PR
+
+Scope each implementation ticket to one small, reviewable PR. Associate that PR with only its owning implementation ticket, and associate the ticket with only that PR. Before opening or linking a PR, check for an existing association in both directions. A parent/project can contain many child tickets, but it does not own their PRs. Keep dependency and parent references as context, separate from PR ownership and closing declarations.
+
+The PR must satisfy every acceptance criterion of its owning ticket. Use the repository's completion linkage for that ticket, such as `Fixes TICKET-123`, so a verified merge can close it. Read the saved Linear association and status back; a missing integration or automation is not a reason to leave delivered work In Progress. When authorized, reconcile the status with the merge evidence.
+
+If the work needs another PR, create another focused ticket before that work starts. If a requirement remains unfinished, give it a separate follow-up ticket with its own acceptance criteria, estimate and dependencies. Never reuse a delivery ticket for a series of partial PRs or hold it open until its parent passes.
+
+### 2.9 Independent child completion and parent traceability
+
+Each child delivers one finite outcome and states which parent criterion it advances. Close the child when its own verified PR merges. Mark a parent criterion complete only when the child's evidence proves that entire criterion; otherwise record the delivered part and leave the remaining parent work unchecked. A source-retention PR, for example, can complete its retention ticket while runtime qualification remains a separate ticket. Do not represent an unexecuted suite or a failing graph as passing.
+
+When cleaning up an existing backlog, inspect the actual PR and acceptance evidence. Separate delivered work from unfinished requirements, create or identify focused follow-ups, and link them in both directions before closing the delivery ticket. Preserve the original scope and evidence as history. Do not simply delete unmet criteria, lower an estimate to disguise a large task, or keep a completed child open for parent acceptance. Parent or umbrella records organize work; decompose their implementation into independently closable tickets of at most three points, preferably one or two.
+
 ## Step 3 — Splitting anything over 3 points
 
 When an issue estimates above 3, split along a real seam rather than slicing arbitrarily. Good seams, roughly in order of preference:
@@ -93,6 +107,8 @@ When an issue estimates above 3, split along a real seam rather than slicing arb
 - **By layer only as a last resort** — backend endpoint vs frontend wiring. Layer splits don't ship independently, so prefer vertical slices when you can.
 
 After splitting, re-estimate each piece and wire the dependencies between them (the slice that lays the foundation usually **blocks** the others). If a "split" piece is still >3, split again — keep going until everything is ≤3.
+
+Check the merge boundary as well as the estimate: each piece must fit one PR whose merge can close that ticket. Move later integration, additional test families or deployment into their own tickets when they cannot be delivered in that PR. State entry prerequisites explicitly instead of inheriting every parent requirement as a child exit condition.
 
 ## Requirements standards: STE100, EARS, Gherkin, traceability, 29148
 
@@ -134,7 +150,10 @@ As a <role>, I want to <action>, so <result>.
 
 **Estimate:** 1|2|3   **Labels:** area, type   **Epic:** project
 **Depends on / blocks:** issue refs, or "none"
-**Entry:** what must be true to start   **Exit:** all AC checked + verified, tests in the traceability table pass
+**Parent criterion advanced:** parent REQ/AC ID and the exact part this child delivers
+**PR ownership:** one owning ticket ↔ one PR; URL when available
+**Follow-ups / excluded parent work:** separate ticket refs, or "none"
+**Entry:** what must be true to start   **Exit:** this child's AC verified, traceability tests pass, and its sole PR merges
 ```
 
 And for the epic:
@@ -176,12 +195,18 @@ The breakdown is done when **every** issue satisfies all of:
 - [ ] Has ≥1 Gherkin AC checkbox per REQ, each tagged with its REQ ID
 - [ ] Has a traceability row for every REQ (REQ → AC → TEST), with no gaps
 - [ ] States an Entry condition and an Exit condition
+- [ ] Fits one PR with exactly one owning implementation ticket; neither side has another PR/ticket association
+- [ ] Child acceptance is finite and independent of unfinished parent or sibling acceptance
+- [ ] Identifies the parent criterion advanced and assigns remaining work to separate focused tickets
+- [ ] The child's verified PR merge can close its ticket without waiting for parent completion
 - [ ] Text follows ASD-STE100 style ([references/ste-writing.md](references/ste-writing.md))
 
 …and the epic itself has what/why/how/key-features/non-goals **and its project-level dependencies wired** (linked to the other projects it depends on, or explicitly a foundational solo). If any box is unchecked, the breakdown isn't finished — fix it before calling it done.
 
 ## Gotchas
 
+- **Merged delivery tickets must not become permanent integration buckets.** Close the verified one-PR delivery; put remaining requirements in separate small tickets and keep parent acceptance accurate.
+- **One PR does not close a parent and its child.** Link it to its single implementation owner. Update parent acceptance through the child's verified evidence, not a second PR ownership association.
 - **The estimate cap is an authoring rule, not a display setting.** "≤3 points" means *split the work*, even if your Linear estimate scale technically allows 5/8. A stored 3 that's really an 8 lies to everyone planning against it.
 - **Parent + label are non-negotiable and easy to forget** when creating issues fast. An issue with no project or no label is effectively invisible later. Verify both on every issue.
 - **Design tickets fail silently without the image.** The implementer will guess copy/spacing and it'll bounce at review. Attach the PNG even when a prototype link exists — links rot and require auth; the attached image always renders on the ticket.
