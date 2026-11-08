@@ -3,7 +3,7 @@ name: linear-labels
 description: Audit, create, group, and consolidate Linear issue and project labels across workspace, parent teams, and subteams. Use for label ownership, duplicates, inherited labels, or taxonomy cleanup; ordinary issue authoring should reuse existing labels first.
 metadata:
   author: kellykampen
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Linear labels
