@@ -12,6 +12,8 @@ tracks the collection as a whole.
 
 ### Added
 
+- `linear-labels` 1.0.0 under `workflow/`: workspace and team ownership, inherited definitions, groups, safe consolidation, and assignment verification for issue and project labels.
+
 - **Skill frontmatter validator** (`scripts/validate_skills.py`, stdlib-only Python 3) — checks every `skills/**/SKILL.md` for present/terminated frontmatter, `name` ≤ 64 chars, and `description` ≤ 1024 chars (measured after YAML `>-` folding, i.e. exactly what Claude Code's skills provider sees). Wired into CI via `.github/workflows/validate-skills.yml`, running on every PR and push to `main`.
 
 ### Fixed
@@ -19,6 +21,8 @@ tracks the collection as a whole.
 - **`convex-domain-folder`** → 1.2.1 (`engineering/`): its frontmatter `description` was 1286 chars — over the 1024-char limit enforced by Claude Code / the skills provider, which can make the skill fail to load. Tightened to 1000 chars, preserving all trigger phrases and use/skip signals; the operational detail dropped from the description (http.ts `registerDomainRoutes` composition mechanics) was already covered in the skill body.
 
 ### Changed
+
+- `issue-breakdown` 1.7.0: discover and reuse workspace and inherited issue labels before creating labels, and verify labels plus provisional estimates on created or revised tickets.
 
 - **`social-capture`** → 2.0.0 (`personal/`): self-contained YouTube extraction, structured X/YouTube note rendering, optional watch mode, and dry runs. Vault destinations, categories, and application headings now live in external configuration. Escaped YAML, source IDs in filenames, and exclusive file creation protect saved notes. The JSON CLI replaces the old raw-markdown interface; migration instructions are included with the skill.
 

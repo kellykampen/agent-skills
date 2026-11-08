@@ -5,6 +5,7 @@ Meta-skills about the AI development workflow itself.
 - [check-model-usage](#check-model-usage)
 - [interview](#interview)
 - [issue-breakdown](#issue-breakdown)
+- [linear-labels](#linear-labels)
 - [model-classifier](#model-classifier)
 - [remotion-explainer-video](#remotion-explainer-video)
 - [skill-maker](#skill-maker)
@@ -124,6 +125,27 @@ It's a top-down procedure: frame the **epic** (what/why/how/key-features/non-goa
 None hard — the methodology is tool-agnostic. To create issues directly it pairs with `linear-cli` (or the Linear MCP); see `references/linear-cli.md`.
 
 Source: [`issue-breakdown/SKILL.md`](./issue-breakdown/SKILL.md)
+
+---
+
+## linear-labels
+
+Audit and consolidate Linear labels across workspace, parent teams, and subteams.
+
+```bash
+npx skills add kellykampen/agent-skills --skill linear-labels
+```
+
+Reuses existing and inherited labels before creating new ones. Guides ownership
+questions, multi-select groups, native consolidation, scope moves, and verification
+that existing issue and project assignments survive the cleanup. Detailed API
+constraints are in a reference loaded only for consolidation work.
+
+Requires a connected Linear integration, authenticated `linear-cli`, or access to
+Linear settings for the operations being performed. Workspace-specific decisions
+stay in the user's workspace, outside this public skill.
+
+Source: [`linear-labels/SKILL.md`](./linear-labels/SKILL.md)
 
 ---
 

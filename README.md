@@ -79,6 +79,7 @@ npx skills add kellykampen/agent-skills --skill cmux-pr-qc-agent
 | [check-model-usage](./skills/workflow/README.md#check-model-usage) | Check quota/usage and session + weekly pacing across your AI coding harnesses (Claude Code, Codex, Antigravity, GLM, Kimi) in one command, via the [CodexBar](https://github.com/steipete/CodexBar) CLI. |
 | [interview](./skills/workflow/README.md#interview) | Interview you in depth (via AskUserQuestion) to turn an idea into a spec — written in place, in `plans/`, or as Linear issues. _User-invoked._ |
 | [issue-breakdown](./skills/workflow/README.md#issue-breakdown) | Break a feature into a Linear epic + small, review-ready issues with acceptance criteria, Fibonacci ≤3 estimates, and dependency links. |
+| [linear-labels](./skills/workflow/README.md#linear-labels) | Organize Linear labels across workspace and team scopes, reuse inherited definitions, and verify consolidation preserves assignments. |
 
 ### Personal capture
 

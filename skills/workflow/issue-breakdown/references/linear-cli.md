@@ -22,7 +22,7 @@ Read this when you're actually creating the epic + issues via `linear-cli`. It m
 | Issue in the epic | Create the issue **with the project set** — never create then forget to parent. Confirm the team is correct. |
 | User story + AC | Goes in the issue **description** (markdown). Use the template from the main skill so AC is always present. |
 | Fibonacci estimate | Set the estimate field to 1/2/3. If your tempted value is 5+, don't store it — split the issue and estimate the pieces. |
-| Labels | Apply ≥1 label per issue (domain + type). If a needed label doesn't exist, create it, don't skip. |
+| Labels | Inspect workspace, parent-team, and team issue labels first. Reuse applicable definitions by ID and scope, including inherited labels. Create a label only after confirming no equivalent exists and choosing its owner and group. Project labels are separate. |
 | Issue dependencies | `linear-cli rel add <A> -r blocks <B>` — A blocks B. Do these after all issues exist. |
 | Visible issue order | Read the view's rank field through raw GraphQL; update that field if the user specified an order. `priority` is urgency, not rank. |
 | Project dependencies | Link the epic to other projects it depends on via `projectRelationCreate` (raw GraphQL — see below). **Not** `linear-cli rel`; that's issues only. |
