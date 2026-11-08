@@ -3,7 +3,7 @@ name: linear-labels
 description: Audit, create, group, and consolidate Linear issue and project labels across workspace, parent teams, and subteams. Use for label ownership, duplicates, inherited labels, or taxonomy cleanup; ordinary issue authoring should reuse existing labels first.
 metadata:
   author: kellykampen
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Linear labels
@@ -66,6 +66,9 @@ and conflicting assignments before merging. No current usage or a null
 Read [references/consolidation.md](references/consolidation.md) before bulk
 replacement, alias merging, group changes, or moving a label between scopes.
 It covers native replacement constraints and settings moves.
+For sibling definitions that belong to their shared parent, prefer Linear's
+native **Move to parent team** action when available. Read the promotion
+guidance in that reference before recreating labels or migrating assignments.
 
 Prefer a supported native consolidation over rewriting each issue's complete
 label list. Preserve unrelated labels and existing multi-label combinations.

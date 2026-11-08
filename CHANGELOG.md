@@ -22,6 +22,8 @@ tracks the collection as a whole.
 
 ### Changed
 
+- `linear-labels` 1.1.0: document native promotion to a parent team, observed consolidation of sibling definitions into inherited copies, and verification of assignments and group propagation.
+
 - `issue-breakdown` 1.7.0: discover and reuse workspace and inherited issue labels before creating labels, and verify labels plus provisional estimates on created or revised tickets.
 
 - **`social-capture`** → 2.0.0 (`personal/`): self-contained YouTube extraction, structured X/YouTube note rendering, optional watch mode, and dry runs. Vault destinations, categories, and application headings now live in external configuration. Escaped YAML, source IDs in filenames, and exclusive file creation protect saved notes. The JSON CLI replaces the old raw-markdown interface; migration instructions are included with the skill.

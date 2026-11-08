@@ -122,6 +122,33 @@ teams, this action can create independent definitions instead of the desired
 parent-owned one. Do not claim it implements a chosen owner until readback
 shows that owner, its children, and the expected inheritance.
 
+### Promote sibling definitions to their parent
+
+A subteam label's settings menu can expose **Move to parent team**. For an
+approved parent-owned concept, prefer this route over temporarily promoting
+the label to workspace scope or recreating it and rewriting issue labels.
+Read the confirmation and verify it names the intended parent; the action
+makes the definition available to that parent's subteams.
+
+In an observed promotion, matching sibling definitions became inherited copies
+of one new parent-owned definition. Their existing child label IDs and issue
+assignments survived, and other children received inherited copies. Treat that
+as observed behavior to verify, not a guarantee about every name collision,
+group configuration, or future version. Inspect matching names and meanings
+across the parent's descendants before promotion.
+
+After each promotion, fetch fresh metadata. Verify exactly one owning root
+under the intended parent and `inheritedFrom` links from the matching children.
+Do not mistake those legitimate child copies for remaining duplicates. Compare
+all pre-existing assignments, including archived issues, against the snapshot;
+keep unrelated labels and estimates intact. Check affected external references
+as described above, and report any verification limits.
+
+When grouping several promoted labels, place the owning roots in the intended
+parent-owned group and verify group membership propagates to inherited copies.
+Check co-occurrences before selecting a single-select mode. Do not move or
+regroup inherited children independently.
+
 Scope moves can run asynchronously and replace IDs. Wait for the operation's
 completion, fetch fresh metadata, and compare issue/project assignments using
 the resulting mapping. Keep uncertain writes sequential and inspect live
