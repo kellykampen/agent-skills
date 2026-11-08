@@ -18,6 +18,18 @@
       "prompt": "break down 'add real-time collaboration to our doc editor' into tickets",
       "expected_output": "A deliberately large/vague feature decomposed into small <=3pt user stories (nothing left as a giant 5+ point ticket), with acceptance criteria, labels, an epic, and a dependency graph across the pieces (presence, cursors, conflict resolution, sync backend, etc.).",
       "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Our source-retention child ticket has one merged PR with verified source and original-unit-test evidence. It is still In Progress because the parent migration has not passed its browser, full package graph, and deployment acceptance. Clean up the breakdown. Each implementation ticket must map to one PR.",
+      "expected_output": "Checks the child's actual scoped evidence, closes the delivered retention ticket, records which parent criterion it satisfies, and leaves parent integration unchecked. Assigns unmet browser, graph, and deployment requirements to separately scoped <=3-point follow-ups with dependencies. Does not claim integration passed, reuse the child for another PR, or associate its PR with the parent as another owner.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Plan a migration ticket to retain a storage adapter, execute its original suites, wire all consumers, and deploy it. We expect four PRs. Can one 8-point issue own all four, with each PR also linked to the parent?",
+      "expected_output": "Splits the work into finite independently verifiable tickets, each <=3 points and preferably 1-2. Gives each planned PR exactly one owning implementation ticket and each ticket exactly one PR. Uses parent acceptance traceability and dependency links instead of multiple PR ownership associations. Each ticket's exit is its own verified PR merge, with no dependency on later parent completion.",
+      "files": []
     }
   ]
 }
