@@ -3,7 +3,7 @@ name: issue-breakdown
 description: "Break a feature or initiative into a Linear epic (project) plus small, review-ready issues that meet a strict quality bar: every issue is a user story ('as a role, I want an action, so a result') with explicit acceptance criteria, a Fibonacci estimate of 3 points or less (anything larger is split), a parent epic/project, blocker and dependency links, and labels; design issues also carry a screenshot/PNG export of the design plus an optional prototype/Figma/Claude Design link. Use whenever the user wants to break down, scope, or plan a feature/epic/initiative into tickets, write Linear issues, create an epic, turn work into user stories, estimate or split tickets, or enforce ticket-quality standards — even if they don't say 'Linear' explicitly. Works whether issues are created via linear-cli, the Linear MCP, or drafted as specs first."
 metadata:
   author: kellykampen
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # Issue Breakdown
@@ -78,6 +78,19 @@ When the user specifies a top-to-bottom execution order, also arrange the projec
 ### 2.6 Labels
 
 Label each issue enough to filter and route it — area/domain, type (feature/bug/chore/spike), and any workflow labels your team uses. Unlabeled issues get lost. At minimum every issue should be findable by its domain.
+
+Inspect the issue-label catalog and team hierarchy before creating a label.
+Reuse workspace and inherited parent-team definitions; do not create a local
+variant such as `platform:cli` when an applicable workspace `cli` exists.
+Project labels are a separate catalog and do not satisfy an issue's labels.
+Respect existing groups and selection modes. Use the `linear-labels` skill,
+when available, for ownership decisions or consolidation; it is not required
+for ordinary issue authoring.
+
+On every ticket created or revised, verify relevant labels and a non-empty
+provisional estimate on the team's configured scale. Fill missing fields before
+handoff. Resolve a disabled estimation scale with the owner rather than silently
+changing team settings. Do not bulk-create new labels to avoid that discovery.
 
 ### 2.7 Design issues carry the design
 
