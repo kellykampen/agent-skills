@@ -70,6 +70,15 @@ mutation {
 }
 ```
 
+For a parent-owned definition, inspect matching names across that parent's
+whole subtree before enabling replacement. In an observed project-label
+promotion, creating an ungrouped label with the parent's `teamId` and
+`replaceTeamLabels: true` resolved a child-name inheritance collision. The
+original child ID became inherited from the new parent definition, preserving
+its project assignment. This is a distinct path from workspace replacement;
+verify the resulting owner, affected subtree, inherited IDs, and assignments.
+Do not assume the issue-label and project-label settings expose identical moves.
+
 Grouped children require special handling. The API rejects replacement of an
 individual label inside a group. For an approved consolidation, detach the
 affected root definitions with `parentId: null`, allow inherited changes to
@@ -122,6 +131,13 @@ teams, this action can create independent definitions instead of the desired
 parent-owned one. Do not claim it implements a chosen owner until readback
 shows that owner, its children, and the expected inheritance.
 
+A scope move has been observed to reset a multi-select group to single-select.
+When preserving existing combinations, prefer promoting ungrouped leaves first,
+then create or reuse a multi-select group at the destination and attach the
+owning roots. If moving an existing group is necessary, snapshot combinations
+and verify the destination mode before further writes. Restoring multi-select
+afterward does not prove combinations survived; compare every assignment.
+
 ### Promote sibling definitions to their parent
 
 A subteam label's settings menu can expose **Move to parent team**. For an
@@ -136,6 +152,13 @@ assignments survived, and other children received inherited copies. Treat that
 as observed behavior to verify, not a guarantee about every name collision,
 group configuration, or future version. Inspect matching names and meanings
 across the parent's descendants before promotion.
+
+The bulk **Move labels to parent team** action can process labels sequentially.
+Navigating away after confirmation has been observed to leave only part of the
+selection promoted. Keep the settings page open until every selected label has
+moved, then verify each owning root through fresh metadata. On interruption,
+resume only the labels still owned by the source team. Do not replay the whole
+selection or infer completion from the dialog closing.
 
 After each promotion, fetch fresh metadata. Verify exactly one owning root
 under the intended parent and `inheritedFrom` links from the matching children.

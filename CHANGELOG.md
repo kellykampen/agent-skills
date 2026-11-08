@@ -22,6 +22,8 @@ tracks the collection as a whole.
 
 ### Changed
 
+- `linear-labels` 1.2.0: document partial bulk-promotion recovery, selection-mode verification after scope moves, and observed parent-scoped project-label replacement that preserves inherited assignments.
+
 - `linear-labels` 1.1.0: document native promotion to a parent team, observed consolidation of sibling definitions into inherited copies, and verification of assignments and group propagation.
 
 - `issue-breakdown` 1.7.0: discover and reuse workspace and inherited issue labels before creating labels, and verify labels plus provisional estimates on created or revised tickets.
